@@ -34,20 +34,33 @@
   </script>
   <style>
     :root { color-scheme: light dark; }
-    .glass { border-radius: 18px; border: 1px solid rgba(255,255,255,.10);
+    * { -webkit-tap-highlight-color: transparent; }
+    .glass {
+      border-radius: 18px; border: 1px solid rgba(255,255,255,.10);
       background: rgba(17,24,39,.68); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-      box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
     :root:not(.dark) .glass { background: rgba(255,255,255,.86); }
     .metric { border-radius: 14px; border: 1px solid rgba(255,255,255,.10);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)); }
-    .input { width:100%; border-radius:12px; padding:12px 14px; border:1px solid rgba(148,163,184,.3);
-      background: rgba(255,255,255,.85); }
-    .dark .input { background: rgba(2,6,23,.4); color:#E5E7EB; border:1px solid rgba(148,163,184,.25); }
+    .input { width:100%; border-radius:12px; padding:14px 14px; border:1px solid rgba(148,163,184,.3);
+      background: rgba(255,255,255,.92); font-size:16px; /* prevent iOS zoom */ }
+    .dark .input { background: rgba(2,6,23,.5); color:#E5E7EB; border:1px solid rgba(148,163,184,.25); }
+    select.inputlike { appearance:none; }
     .input:focus { outline:none; box-shadow:0 0 0 2px rgba(6,182,212,.35); }
-    .label { font-size:12px; font-weight:600; letter-spacing:.02em; color:#6B7280; }
+    .label { font-size:14px; font-weight:600; letter-spacing:.02em; color:#6B7280; }
     .dark .label { color:#94A3B8; }
     .number { font-variant-numeric: tabular-nums; }
-    @media print { header,.no-print { display:none !important; } body { background:#fff !important; } }
+    @media print { header,.no-print,.sticky-kpis { display:none !important; } body { background:#fff !important; } }
+
+    /* mobile tweaks */
+    @media (max-width: 640px){
+      .btn { padding:12px 14px !important; font-size:14px !important; border-radius:12px !important; }
+      .header-tools { overflow-x:auto; -webkit-overflow-scrolling: touch; gap: .5rem; }
+      .header-tools > * { flex: 0 0 auto; }
+      .selector-wrap select { min-width: 220px; }
+      .sticky-kpis { position: sticky; top: 0; z-index: 40; padding-top: .5rem; background: linear-gradient(to bottom, rgba(2,6,23,.7), rgba(2,6,23,0)); backdrop-filter: blur(6px); }
+    }
   </style>
 
   <script>
@@ -73,105 +86,108 @@
 
   <!-- Header -->
   <header class="no-print">
-    <div class="max-w-5xl mx-auto px-4 py-5 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 grid place-items-center rounded-2xl bg-brand-500/20 text-brand-300 text-xl shadow-glow">🧮</div>
-        <div>
-          <h1 class="text-xl font-extrabold tracking-tight">REI Marketing ROI — MBPS</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Plan-based modeling with combined totals (Funnel: Spend → Leads → Contracts)</p>
+    <div class="max-w-5xl mx-auto px-4 py-4 sm:py-5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 grid place-items-center rounded-2xl bg-brand-500/20 text-brand-300 text-xl shadow-glow">🧮</div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">REI Marketing ROI — MBPS</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Spend → Leads → Contracts (per plan)</p>
+          </div>
         </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="themeBtn" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40 hover:shadow-glow text-sm">Light/Dark</button>
-        <button id="installBtn" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40 hover:shadow-glow text-sm hidden">Install</button>
-        <button id="csvBtn" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40 hover:shadow-glow text-sm">Export CSV</button>
-        <button id="resetBtn" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40 hover:shadow-glow text-sm">Reset</button>
-        <button id="printBtn" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:shadow-glow text-sm">Print / PDF</button>
+        <div class="header-tools flex items-center gap-2">
+          <button id="themeBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40">Light/Dark</button>
+          <button id="installBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40 hidden">Install</button>
+          <button id="csvBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40">Export CSV</button>
+          <button id="resetBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40">Reset</button>
+          <button id="printBtn" class="btn px-3 py-2 rounded-xl bg-brand-600 text-white">Print / PDF</button>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Main -->
-  <main class="max-w-5xl mx-auto px-4 pb-20">
+  <main class="max-w-5xl mx-auto px-4 pb-24 sm:pb-20">
 
-    <!-- KPIs -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="metric p-4 glass"><div class="text-[11px] label">Total Marketing Budget</div><div id="kpiMkt" class="number text-2xl font-extrabold">$0</div></div>
-      <div class="metric p-4 glass"><div class="text-[11px] label">VA Spend</div><div id="kpiVA" class="number text-2xl font-extrabold">$0</div></div>
-      <div class="metric p-4 glass"><div class="text-[11px] label">Deals / Mo</div><div id="kpiDeals" class="number text-2xl font-extrabold">0.00</div></div>
-      <div class="metric p-4 glass"><div class="text-[11px] label">ROI</div><div id="kpiROI" class="number text-2xl font-extrabold">0%</div></div>
+    <!-- KPIs (sticky on mobile) -->
+    <section class="sticky-kpis grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">Total Marketing Budget</div><div id="kpiMkt" class="number text-xl sm:text-2xl font-extrabold">$0</div></div>
+      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">VA Spend</div><div id="kpiVA" class="number text-xl sm:text-2xl font-extrabold">$0</div></div>
+      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">Deals / Mo</div><div id="kpiDeals" class="number text-xl sm:text-2xl font-extrabold">0.00</div></div>
+      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">ROI</div><div id="kpiROI" class="number text-xl sm:text-2xl font-extrabold">0%</div></div>
     </section>
 
     <!-- Plan Card with LEFT-ALIGNED SELECTOR + PRESETS -->
-    <section class="glass p-6 md:p-8">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
-        <div class="flex items-center gap-3">
+    <section class="glass p-4 sm:p-6 md:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-5">
+        <div class="selector-wrap w-full sm:w-auto flex flex-col sm:flex-row gap-3 sm:items-center">
           <label class="label">Select Marketing Plan</label>
-          <div class="relative">
-            <select id="planSelector" class="pl-10 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/40 hover:shadow-glow text-sm appearance-none">
+          <div class="relative w-full sm:w-auto">
+            <select id="planSelector" class="input inputlike pl-10 pr-10 py-3 w-full sm:w-[220px]">
               <option value="sms">📱 SMS</option>
               <option value="calls">☎️ Calls</option>
               <option value="mail">✉️ Mail</option>
               <option value="ppl">💻 PPC / PPL</option>
             </select>
-            <span class="pointer-events-none absolute left-3 top-2.5">🔀</span>
-            <span class="pointer-events-none absolute right-3 top-2.5">▾</span>
+            <span class="pointer-events-none absolute left-3 top-3.5">🔀</span>
+            <span class="pointer-events-none absolute right-3 top-3.5">▾</span>
           </div>
 
-          <div class="relative ml-4">
-            <select id="presetSelector" class="pl-10 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/40 hover:shadow-glow text-sm appearance-none">
+          <label class="label sm:ml-4">Assumption Preset</label>
+          <div class="relative w-full sm:w-auto">
+            <select id="presetSelector" class="input inputlike pl-10 pr-10 py-3 w-full sm:w-[200px]">
               <option value="baseline">⚖️ Baseline</option>
               <option value="aggressive">🔥 Aggressive</option>
               <option value="conservative">🧊 Conservative</option>
             </select>
-            <span class="pointer-events-none absolute left-3 top-2.5">🎛️</span>
-            <span class="pointer-events-none absolute right-3 top-2.5">▾</span>
+            <span class="pointer-events-none absolute left-3 top-3.5">🎛️</span>
+            <span class="pointer-events-none absolute right-3 top-3.5">▾</span>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <input id="planEnabled" type="checkbox" class="h-4 w-4" checked />
-          <label for="planEnabled" class="text-sm text-slate-600 dark:text-slate-300">Include this plan in totals</label>
-        </div>
+        <label class="inline-flex items-center gap-2">
+          <input id="planEnabled" type="checkbox" class="h-5 w-5" checked />
+          <span class="text-sm text-slate-600 dark:text-slate-300">Include this plan in totals</span>
+        </label>
       </div>
 
-      <div id="planForm" class="grid md:grid-cols-3 gap-6">
+      <div id="planForm" class="grid gap-5 md:grid-cols-3">
         <!-- Column 1: Budget -->
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">Plan Budget</h2>
-          <div class="grid gap-4">
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">Plan Budget</h2>
+          <div class="grid gap-3">
             <div>
               <label class="label">Budget for this Plan ($/mo)</label>
-              <input id="pBudget" type="number" class="input" min="0" value="2500" />
+              <input id="pBudget" type="number" class="input" min="0" value="2500" inputmode="decimal" />
             </div>
 
             <!-- Cost input switches label depending on plan type -->
             <div>
               <label id="costLabel" class="label">Cost per Touch</label>
-              <input id="pCost" type="number" step="0.0001" class="input" min="0" value="0.012" />
+              <input id="pCost" type="number" step="0.0001" class="input" min="0" value="0.012" inputmode="decimal" />
             </div>
           </div>
         </div>
 
         <!-- Column 2: Funnel Rates -->
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">Funnel (This Plan)</h2>
-          <div class="grid gap-4">
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">Funnel (This Plan)</h2>
+          <div class="grid gap-3">
             <div>
               <label id="leadRateLabel" class="label">Touch → Lead %</label>
-              <input id="pLeadRate" type="number" step="0.01" class="input" min="0" max="100" value="2" />
+              <input id="pLeadRate" type="number" step="0.01" class="input" min="0" max="100" value="2" inputmode="decimal" />
             </div>
             <div>
               <label id="dealRateLabel" class="label">Lead → Contract %</label>
-              <input id="pDealRate" type="number" step="0.01" class="input" min="0" max="100" value="2" />
+              <input id="pDealRate" type="number" step="0.01" class="input" min="0" max="100" value="2" inputmode="decimal" />
             </div>
           </div>
         </div>
 
         <!-- Column 3: Output (per selected plan) -->
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">This Plan — Output</h2>
-          <div class="grid gap-4">
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">This Plan — Output</h2>
+          <div class="grid gap-3">
             <div>
               <label class="label">Touches / Mo (est.)</label>
               <input id="pTouches" class="input" value="0" disabled />
@@ -193,41 +209,41 @@
       </div>
 
       <!-- VA + Global Settings -->
-      <div class="mt-8 grid md:grid-cols-3 gap-6">
+      <div class="mt-6 grid gap-5 md:grid-cols-3">
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">VA Spend</h2>
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">VA Spend</h2>
           <div class="space-y-3">
-            <div class="flex items-center gap-2">
-              <input id="useVABudget" type="checkbox" class="h-4 w-4">
-              <label for="useVABudget" class="text-sm text-slate-500 dark:text-slate-400">Enter VA budget directly</label>
-            </div>
-            <div id="vaByPeople" class="grid grid-cols-3 gap-4">
-              <div><label class="label"># of VAs</label><input id="vaCount" type="number" class="input" value="1" min="0"></div>
-              <div><label class="label">VA $/hr</label><input id="vaRate" type="number" class="input" value="6" min="0" step="0.01"></div>
-              <div><label class="label">Hours/Week</label><input id="vaHours" type="number" class="input" value="20" min="0"></div>
+            <label class="inline-flex items-center gap-2">
+              <input id="useVABudget" type="checkbox" class="h-5 w-5">
+              <span class="text-sm text-slate-500 dark:text-slate-400">Enter VA budget directly</span>
+            </label>
+            <div id="vaByPeople" class="grid grid-cols-3 gap-3">
+              <div><label class="label"># of VAs</label><input id="vaCount" type="number" class="input" value="1" min="0" inputmode="decimal"></div>
+              <div><label class="label">VA $/hr</label><input id="vaRate" type="number" class="input" value="6" min="0" step="0.01" inputmode="decimal"></div>
+              <div><label class="label">Hours/Week</label><input id="vaHours" type="number" class="input" value="20" min="0" inputmode="decimal"></div>
             </div>
             <div id="vaByBudget" class="hidden">
-              <label class="label">VA budget ($/mo)</label><input id="vaBudget" type="number" class="input" value="0" min="0">
+              <label class="label">VA budget ($/mo)</label><input id="vaBudget" type="number" class="input" value="0" min="0" inputmode="decimal">
             </div>
           </div>
         </div>
 
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">Economics</h2>
-          <div class="grid gap-4">
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">Economics</h2>
+          <div class="grid gap-3">
             <div>
               <label class="label">Average Deal Size ($)</label>
-              <input id="dealSize" type="number" class="input" value="15000" min="0">
+              <input id="dealSize" type="number" class="input" value="15000" min="0" inputmode="decimal">
             </div>
-            <div class="flex items-center gap-2">
-              <input id="toggleOverhead" type="checkbox" class="h-4 w-4">
-              <label for="toggleOverhead" class="text-sm text-slate-600 dark:text-slate-300">Treat VA as fixed overhead (exclude from CPA)</label>
-            </div>
+            <label class="inline-flex items-center gap-2">
+              <input id="toggleOverhead" type="checkbox" class="h-5 w-5">
+              <span class="text-sm text-slate-600 dark:text-slate-300">Treat VA as fixed overhead (exclude from CPA)</span>
+            </label>
           </div>
         </div>
 
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">Per-Deal Metrics</h2>
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">Per-Deal Metrics</h2>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div class="p-3 rounded-xl border border-white/10 bg-white/60 dark:bg-white/5">
               <div class="text-slate-500 dark:text-slate-400">Cost per Deal (marketing only)</div>
@@ -242,21 +258,21 @@
       </div>
 
       <!-- Goal Seek -->
-      <div class="mt-8 grid md:grid-cols-2 gap-6">
-        <div class="p-5 rounded-2xl border border-white/10 bg-white/70 dark:bg-white/5">
-          <h3 class="text-sm font-semibold text-brand-300 mb-3">Goal Seek — Target Deals/Month</h3>
+      <div class="mt-6 grid gap-5 md:grid-cols-2">
+        <div class="p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/70 dark:bg-white/5">
+          <h3 class="text-sm font-semibold text-brand-300 mb-2">Goal Seek — Target Deals/Month</h3>
           <div class="flex gap-3 items-center">
-            <input id="goalDeals" type="number" value="3" class="input w-32" />
-            <button id="goalSolve" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:shadow-glow text-sm">Solve by adjusting this plan’s budget</button>
+            <input id="goalDeals" type="number" value="3" class="input w-32" inputmode="decimal" />
+            <button id="goalSolve" class="btn px-3 py-2 rounded-xl bg-brand-600 text-white">Solve (adjust this plan’s budget)</button>
           </div>
           <div id="goalResult" class="text-sm text-slate-600 dark:text-slate-300 mt-2"></div>
         </div>
 
-        <div class="p-5 rounded-2xl border border-white/10 bg-white/70 dark:bg-white/5">
-          <h3 class="text-sm font-semibold text-brand-300 mb-3">Goal Seek — Target Profit/Month ($)</h3>
+        <div class="p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/70 dark:bg-white/5">
+          <h3 class="text-sm font-semibold text-brand-300 mb-2">Goal Seek — Target Profit/Month ($)</h3>
           <div class="flex gap-3 items-center">
-            <input id="goalProfit" type="number" value="30000" class="input w-40" />
-            <button id="goalSolveProfit" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:shadow-glow text-sm">Solve by adjusting this plan’s budget</button>
+            <input id="goalProfit" type="number" value="30000" class="input w-40" inputmode="decimal" />
+            <button id="goalSolveProfit" class="btn px-3 py-2 rounded-xl bg-brand-600 text-white">Solve (adjust this plan’s budget)</button>
           </div>
           <div id="goalResultProfit" class="text-sm text-slate-600 dark:text-slate-300 mt-2"></div>
         </div>
@@ -264,10 +280,10 @@
     </section>
 
     <!-- Totals Table -->
-    <section class="mt-6 glass p-6 md:p-8">
+    <section class="mt-4 sm:mt-6 glass p-4 sm:p-6 md:p-8">
       <h2 class="text-sm font-semibold text-brand-300 mb-3">Combined Totals (Included Plans)</h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+      <div class="overflow-x-auto -mx-2 sm:mx-0 px-2">
+        <table class="w-full text-sm min-w-[720px]">
           <thead class="text-left text-slate-500 dark:text-slate-400 border-b border-white/10">
             <tr><th>Plan</th><th>Budget</th><th>Touches</th><th>Leads</th><th>Deals</th><th>Revenue</th><th>Cost</th><th>Profit</th></tr>
           </thead>
@@ -284,7 +300,7 @@
     </footer>
   </main>
 
-  <!-- App Logic -->
+  <!-- App Logic (unchanged functionality; mobile tweaks only in UI) -->
   <script>
     const el = id => document.getElementById(id);
     const fmt = (n, d=0) => isFinite(n) ? n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) : '-';
@@ -298,18 +314,14 @@
     });
 
     // ---- Plans (funnel model) ----
-    // type: 'touch' channels use cost per touch & lead/deal % (sms, calls, mail)
-    // type: 'lead' channels use cost per lead & lead->deal % (ppl)
     const plans = {
       sms:  { type:'touch', name:'SMS',   icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 },
       calls:{ type:'touch', name:'Calls', icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 },
       mail: { type:'touch', name:'Mail',  icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 },
       ppl:  { type:'lead',  name:'PPC/PPL',icon:'💻',enabled:false, budget:5000, cost:100,   leadRate:100, dealRate:3 }
-      // For 'lead' type, leadRate is a fixed 100% (budget/cost = leads). We keep the field for uniformity.
     };
     let selectedPlan = 'sms';
 
-    // Presets adjust ALL plans at once
     const presets = {
       baseline: () => {
         plans.sms.cost=0.012; plans.sms.leadRate=2;  plans.sms.dealRate=2;
@@ -351,7 +363,7 @@
         const cost = p.budget;
         const profit = revenue - cost;
         return { touches, leads, deals, revenue, cost, profit };
-      } else { // 'lead' type (PPC/PPL)
+      } else {
         const leads = p.cost>0 ? (p.budget / p.cost) : 0;
         const deals = leads * (p.dealRate/100);
         const revenue = deals * dealSize;
@@ -386,7 +398,6 @@
       return { rows, totals };
     }
 
-    // --- Goal Seek: adjust selected plan's budget to meet global target ---
     function setSelectedBudget(val){ plans[selectedPlan].budget = Math.max(0, Math.round(val)); }
     function budgetForDeals(targetDeals, maxIter=32){
       let lo=0, hi=100000;
@@ -394,8 +405,7 @@
         const mid=(lo+hi)/2; setSelectedBudget(mid);
         const r = combinedCalc().totals; (r.deals >= targetDeals) ? hi=mid : lo=mid;
       }
-      setSelectedBudget(hi); syncPlanFields(); render();
-      return hi;
+      setSelectedBudget(hi); syncPlanFields(); render(); return hi;
     }
     function budgetForProfit(targetProfit, maxIter=32){
       let lo=0, hi=100000;
@@ -403,11 +413,9 @@
         const mid=(lo+hi)/2; setSelectedBudget(mid);
         const r = combinedCalc().totals; (r.profit >= targetProfit) ? hi=mid : lo=mid;
       }
-      setSelectedBudget(hi); syncPlanFields(); render();
-      return hi;
+      setSelectedBudget(hi); syncPlanFields(); render(); return hi;
     }
 
-    // --- UI sync for selected plan fields ---
     function syncCostLabels(){
       const p = plans[selectedPlan];
       if (p.type === 'touch'){
@@ -430,7 +438,6 @@
       el('pDealRate').value = p.dealRate;
       syncCostLabels();
 
-      // Quick outputs for current plan
       const sz = +el('dealSize').value || 0;
       const r = calcPlan(p, sz);
       el('pTouches').value = fmt(r.touches,0);
@@ -439,17 +446,14 @@
       el('pRevenue').value = money(r.revenue,0);
     }
 
-    // --- Render totals + table + KPIs ---
     function render(){
       const { rows, totals } = combinedCalc();
 
-      // KPIs
       el('kpiMkt').textContent = money(totals.mktCost);
       el('kpiVA').textContent = money(totals.vaSpend);
       el('kpiDeals').textContent = fmt(totals.deals,2);
       el('kpiROI').textContent = fmt(totals.roi*100,0)+'%';
 
-      // Table
       const body = el('tableBody'); body.innerHTML='';
       rows.forEach(row=>{
         const p = plans[row.key];
@@ -468,7 +472,6 @@
         body.appendChild(tr);
       });
 
-      // Totals in table
       el('tBudget').textContent = money(totals.budget);
       el('tTouches').textContent = fmt(totals.touches,0);
       el('tLeads').textContent = fmt(totals.leads,0);
@@ -477,17 +480,14 @@
       el('tCost').textContent = money(totals.totalCost);
       el('tProfit').textContent = money(totals.profit);
 
-      // CPA (marketing-only) & Profit/Deal
       const costForCPA = treatVAAsOverhead ? totals.mktCost : totals.totalCost;
       const cpa = totals.deals>0 ? (costForCPA / totals.deals) : 0;
       const ppd = totals.deals>0 ? (totals.profit / totals.deals) : 0;
       el('cpa').textContent = money(cpa,0);
       el('ppd').textContent = money(ppd,0);
 
-      // Keep current plan outputs fresh
       syncPlanFields();
 
-      // Snapshot for CSV
       window.__roiSnapshot = {
         timestamp: new Date().toISOString(),
         plans: JSON.parse(JSON.stringify(plans)),
@@ -501,7 +501,6 @@
       };
     }
 
-    // CSV
     function toCSV(){
       const s = window.__roiSnapshot; if(!s) return '';
       const L = [];
@@ -537,7 +536,6 @@
       a.href=url; a.download=`rei-roi-funnel-${stamp}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
-    // Wire plan selector + fields
     function applyPlanFieldChanges(){
       const p = plans[selectedPlan];
       p.enabled = el('planEnabled').checked;
@@ -551,12 +549,9 @@
 
     el('planSelector').addEventListener('change', (e)=>{
       selectedPlan = e.target.value;
-      // Auto-enable newly selected plan
-      plans[selectedPlan].enabled = true;
+      plans[selectedPlan].enabled = true; // auto-include selected plan
       el('planEnabled').checked = true;
-      syncPlanFields();
-      render();
-      // Adjust labels for cost/rates per type
+      syncPlanFields(); render();
     });
 
     el('presetSelector').addEventListener('change', (e)=>{
@@ -565,7 +560,6 @@
       syncPlanFields(); render();
     });
 
-    // Wire VA + economics
     el('useVABudget').addEventListener('change', ()=>{
       const useB = el('useVABudget').checked;
       el('vaByBudget').classList.toggle('hidden', !useB);
@@ -575,7 +569,6 @@
     ['vaCount','vaRate','vaHours','vaBudget','dealSize'].forEach(id=>el(id).addEventListener('input', render));
     el('toggleOverhead').addEventListener('change', e=>{ treatVAAsOverhead = e.target.checked; render(); });
 
-    // Goal seek
     el('goalSolve').addEventListener('click', ()=>{
       const t=+el('goalDeals').value||0; if(t<=0) return;
       const b=budgetForDeals(t);
@@ -589,11 +582,9 @@
       el('goalResultProfit').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo`;
     });
 
-    // Header buttons
     el('csvBtn').addEventListener('click', downloadCSV);
     el('printBtn').addEventListener('click', ()=>window.print());
     el('resetBtn').addEventListener('click', ()=>{
-      // Defaults: SMS on, others off, baseline preset
       plans.sms  = { type:'touch', name:'SMS',   icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 };
       plans.calls= { type:'touch', name:'Calls', icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 };
       plans.mail = { type:'touch', name:'Mail',  icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 };
@@ -616,7 +607,7 @@
       syncPlanFields(); render();
     });
 
-    // PWA install + SW
+    // PWA
     let deferredPrompt=null; const installBtn=el('installBtn');
     document.addEventListener('DOMContentLoaded', ()=>{
       el('year').textContent = new Date().getFullYear();

@@ -3,41 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>REI Marketing ROI Calculator — Budget-Driven</title>
+  <title>REI Marketing ROI — MBPS</title>
   <meta name="theme-color" content="#0ea5e9" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
-  <!-- Tailwind -->
+  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
-      theme: { extend: {
-        colors:{ brand:{50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',300:'#67e8f9',400:'#22d3ee',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63'}},
-        boxShadow:{ soft:'0 10px 25px rgba(0,0,0,0.08)'}
-      }}
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',300:'#67e8f9',
+              400:'#22d3ee',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63'
+            }
+          },
+          boxShadow:{ soft:'0 10px 25px rgba(0,0,0,0.08)'}
+        }
+      }
     }
   </script>
   <style>
-    .kpi { border-radius: 1rem; }
     .card { border-radius: 1rem; }
+    .kpi { border-radius: 1rem; }
     .number { font-variant-numeric: tabular-nums; }
     .input { @apply w-full rounded-xl border border-gray-200 p-3 focus:outline-none focus:ring-2 focus:ring-brand-400; }
     .label { @apply text-sm font-medium text-gray-600; }
+    @media print {
+      header, #installBtn, #csvBtn, #resetBtn, #printBtn { display: none !important; }
+      body { background: white !important; }
+    }
   </style>
 </head>
+
 <body class="bg-gradient-to-b from-brand-50 to-white min-h-screen text-gray-900">
+  <!-- Header -->
   <header class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="h-10 w-10 grid place-items-center rounded-2xl bg-brand-100 text-brand-700 text-xl">🧮</div>
         <div>
-          <h1 class="text-xl font-bold">REI Marketing ROI — Budget Driven</h1>
-          <p class="text-xs text-gray-500">Enter budgets → expected touches, deals, and return</p>
+          <h1 class="text-xl font-bold">REI Marketing ROI — MBPS</h1>
+          <p class="text-xs text-gray-500">Budget → Touches → Deals → Profit → ROI</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -49,23 +59,24 @@
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6">
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
     <!-- KPIs -->
-    <section class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+    <section class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <div class="kpi bg-white shadow-soft p-4">
-        <div class="text-xs text-gray-500">Marketing Budget / Mo</div>
+        <div class="text-xs text-gray-500">Marketing Budget</div>
         <div id="kpiMkt" class="number text-2xl font-bold">$0</div>
       </div>
       <div class="kpi bg-white shadow-soft p-4">
-        <div class="text-xs text-gray-500">VA Spend / Mo</div>
+        <div class="text-xs text-gray-500">VA Spend</div>
         <div id="kpiVA" class="number text-2xl font-bold">$0</div>
       </div>
       <div class="kpi bg-white shadow-soft p-4">
-        <div class="text-xs text-gray-500">Expected Deals / Mo</div>
+        <div class="text-xs text-gray-500">Deals / Mo</div>
         <div id="kpiDeals" class="number text-2xl font-bold">0.00</div>
       </div>
       <div class="kpi bg-white shadow-soft p-4">
-        <div class="text-xs text-gray-500">Est. Profit / Mo</div>
+        <div class="text-xs text-gray-500">Profit / Mo</div>
         <div id="kpiProfit" class="number text-2xl font-bold">$0</div>
       </div>
       <div class="kpi bg-white shadow-soft p-4">
@@ -74,7 +85,9 @@
       </div>
     </section>
 
+    <!-- Main Cards -->
     <section class="grid lg:grid-cols-3 gap-6">
+
       <!-- Budgets -->
       <div class="card bg-white shadow-soft p-5">
         <h2 class="font-semibold mb-3">Budgets</h2>
@@ -83,61 +96,30 @@
             <label class="label">Total Marketing Budget ($/mo)</label>
             <input id="mktBudget" type="number" class="input" value="5000" min="0">
           </div>
-
           <div class="col-span-2 text-sm font-semibold mt-2">Channel Allocation (%)</div>
-          <div>
-            <label class="label">SMS %</label>
-            <input id="pctSMS" type="number" class="input" value="50" min="0" max="100">
-          </div>
-          <div>
-            <label class="label">Calls %</label>
-            <input id="pctCall" type="number" class="input" value="30" min="0" max="100">
-          </div>
-          <div>
-            <label class="label">Letters %</label>
-            <input id="pctLetter" type="number" class="input" value="20" min="0" max="100">
-          </div>
+          <div><label class="label">SMS %</label><input id="pctSMS" type="number" class="input" value="50" min="0" max="100"></div>
+          <div><label class="label">Calls %</label><input id="pctCall" type="number" class="input" value="30" min="0" max="100"></div>
+          <div><label class="label">Letters %</label><input id="pctLetter" type="number" class="input" value="20" min="0" max="100"></div>
         </div>
-
         <div class="mt-4 border-t pt-4">
-          <div class="flex items-center gap-2">
-            <input id="lock100" type="checkbox" class="h-4 w-4" checked>
-            <label for="lock100" class="text-sm text-gray-600">Force allocation to 100% (auto-normalize)</label>
-          </div>
+          <input id="lock100" type="checkbox" class="h-4 w-4" checked>
+          <label for="lock100" class="text-sm text-gray-600">Force allocation to 100% (auto-normalize)</label>
         </div>
       </div>
 
-      <!-- Unit costs & conversion -->
+      <!-- Unit Costs & Conversion -->
       <div class="card bg-white shadow-soft p-5">
         <h2 class="font-semibold mb-3">Unit Costs & Conversion</h2>
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2 text-sm font-semibold">Unit Cost ($ per touch)</div>
-          <div>
-            <label class="label">SMS cost</label>
-            <input id="costSMS" type="number" step="0.0001" class="input" value="0.02" min="0">
-          </div>
-          <div>
-            <label class="label">Call cost</label>
-            <input id="costCall" type="number" step="0.0001" class="input" value="0.02" min="0">
-          </div>
-          <div>
-            <label class="label">Letter cost</label>
-            <input id="costLetter" type="number" step="0.01" class="input" value="0.85" min="0">
-          </div>
+          <div><label class="label">SMS cost</label><input id="costSMS" type="number" step="0.0001" class="input" value="0.02" min="0"></div>
+          <div><label class="label">Call cost</label><input id="costCall" type="number" step="0.0001" class="input" value="0.02" min="0"></div>
+          <div><label class="label">Letter cost</label><input id="costLetter" type="number" step="0.01" class="input" value="0.85" min="0"></div>
 
           <div class="col-span-2 text-sm font-semibold mt-4">Touches per Deal (by channel)</div>
-          <div>
-            <label class="label">SMS touches / deal</label>
-            <input id="tpdSMS" type="number" class="input" value="2500" min="1">
-          </div>
-          <div>
-            <label class="label">Call touches / deal</label>
-            <input id="tpdCall" type="number" class="input" value="600" min="1">
-          </div>
-          <div>
-            <label class="label">Letter touches / deal</label>
-            <input id="tpdLetter" type="number" class="input" value="400" min="1">
-          </div>
+          <div><label class="label">SMS</label><input id="tpdSMS" type="number" class="input" value="2500" min="1"></div>
+          <div><label class="label">Calls</label><input id="tpdCall" type="number" class="input" value="600" min="1"></div>
+          <div><label class="label">Letters</label><input id="tpdLetter" type="number" class="input" value="400" min="1"></div>
 
           <div class="col-span-2 mt-2">
             <label class="label">Average Deal Size ($)</label>
@@ -146,34 +128,22 @@
         </div>
       </div>
 
-      <!-- VA spend & results table -->
+      <!-- VA + Results -->
       <div class="card bg-white shadow-soft p-5">
         <h2 class="font-semibold mb-3">VA Spend & Results</h2>
-
         <div class="space-y-3">
           <div class="flex items-center gap-2">
             <input id="useVABudget" type="checkbox" class="h-4 w-4">
-            <label for="useVABudget" class="text-sm text-gray-700">Enter VA budget directly</label>
+            <label class="text-sm text-gray-700">Enter VA budget directly</label>
           </div>
 
-        <div id="vaByPeople" class="grid grid-cols-3 gap-4">
-            <div>
-              <label class="label"># of VAs</label>
-              <input id="vaCount" type="number" class="input" value="1" min="0">
-            </div>
-            <div>
-              <label class="label">VA hourly ($)</label>
-              <input id="vaRate" type="number" step="0.01" class="input" value="6" min="0">
-            </div>
-            <div>
-              <label class="label">Hours/VA per week</label>
-              <input id="vaHours" type="number" class="input" value="20" min="0">
-            </div>
+          <div id="vaByPeople" class="grid grid-cols-3 gap-4">
+            <div><label class="label"># of VAs</label><input id="vaCount" type="number" class="input" value="1" min="0"></div>
+            <div><label class="label">VA hourly ($)</label><input id="vaRate" type="number" step="0.01" class="input" value="6" min="0"></div>
+            <div><label class="label">Hours/VA per week</label><input id="vaHours" type="number" class="input" value="20" min="0"></div>
           </div>
-
           <div id="vaByBudget" class="hidden">
-            <label class="label">VA budget ($/mo)</label>
-            <input id="vaBudget" type="number" class="input" value="0" min="0">
+            <label class="label">VA budget ($/mo)</label><input id="vaBudget" type="number" class="input" value="0" min="0">
           </div>
         </div>
 
@@ -181,25 +151,14 @@
           <table class="w-full text-sm">
             <thead class="text-left text-gray-500 border-b">
               <tr>
-                <th class="py-2">Channel</th>
-                <th>Budget</th>
-                <th>Touches</th>
-                <th>Deals</th>
-                <th>Revenue</th>
-                <th>Cost</th>
-                <th>Profit</th>
+                <th>Channel</th><th>Budget</th><th>Touches</th><th>Deals</th><th>Revenue</th><th>Cost</th><th>Profit</th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
             <tfoot class="border-t font-semibold">
               <tr>
-                <td class="py-2">Totals</td>
-                <td id="tBudget" class="number"></td>
-                <td id="tTouches" class="number"></td>
-                <td id="tDeals" class="number"></td>
-                <td id="tRevenue" class="number"></td>
-                <td id="tCost" class="number"></td>
-                <td id="tProfit" class="number"></td>
+                <td>Totals</td>
+                <td id="tBudget"></td><td id="tTouches"></td><td id="tDeals"></td><td id="tRevenue"></td><td id="tCost"></td><td id="tProfit"></td>
               </tr>
             </tfoot>
           </table>
@@ -207,7 +166,7 @@
 
         <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
           <div class="p-3 rounded-xl border">
-            <div class="text-gray-500">Blended Cost per Deal</div>
+            <div class="text-gray-500">Cost per Deal</div>
             <div id="cpa" class="number font-semibold">$0</div>
           </div>
           <div class="p-3 rounded-xl border">
@@ -218,35 +177,41 @@
       </div>
     </section>
 
-    <!-- === Advanced Settings + Goal Seek === -->
-    <div class="mt-6 card bg-white shadow-soft p-5">
+    <!-- Advanced Settings -->
+    <section class="card bg-white shadow-soft p-5">
       <h2 class="font-semibold mb-3">Advanced Settings</h2>
       <div class="flex items-center gap-2 mb-4">
         <input id="toggleOverhead" type="checkbox" class="h-4 w-4">
-        <label for="toggleOverhead" class="text-sm text-gray-700">
-          Treat VA as fixed overhead (exclude from CPA)
-        </label>
+        <label class="text-sm text-gray-700">Treat VA as fixed overhead (exclude from CPA)</label>
       </div>
 
       <div class="border-t pt-4 mt-4">
         <label class="label">Goal Seek — Target Deals/Month</label>
         <div class="flex gap-3 items-center mt-1">
           <input id="goalDeals" type="number" value="3" class="input w-32">
-          <button id="goalSolve" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:bg-brand-700 text-sm">
-            Solve Budget
-          </button>
+          <button id="goalSolve" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:bg-brand-700 text-sm">Solve Budget</button>
           <span id="goalResult" class="text-sm text-gray-700 ml-1"></span>
         </div>
       </div>
-    </div>
 
-    <section class="mt-6 card bg-white shadow-soft p-5">
+      <div class="border-t pt-4 mt-4">
+        <label class="label">Goal Seek — Target Profit/Month ($)</label>
+        <div class="flex gap-3 items-center mt-1">
+          <input id="goalProfit" type="number" value="30000" class="input w-40">
+          <button id="goalSolveProfit" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:bg-brand-700 text-sm">Solve Budget</button>
+          <span id="goalResultProfit" class="text-sm text-gray-700 ml-1"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="card bg-white shadow-soft p-5">
       <h2 class="font-semibold mb-2">How It Works</h2>
       <ul class="list-disc ml-6 text-sm space-y-1 text-gray-700">
         <li>Channel budget = Total Marketing Budget × allocation % (normalized to 100% if enabled).</li>
         <li>Touches = Channel budget ÷ unit cost. Deals = Touches ÷ touches-per-deal.</li>
-        <li>Revenue = Deals × Average Deal Size. Cost = Channel budget + VA spend (or exclude from CPA if toggled).</li>
-        <li>ROI = (Revenue − (Marketing + VA)) ÷ (Marketing + VA).</li>
+        <li>Revenue = Deals × Average Deal Size. Cost = Channel budget + VA spend.</li>
+        <li>ROI = (Revenue − (Marketing + VA)) ÷ (Marketing + VA). CPA toggle excludes VA when enabled.</li>
       </ul>
     </section>
 
@@ -255,6 +220,7 @@
     </footer>
   </main>
 
+  <!-- Inline App Logic -->
   <script>
     const el = id => document.getElementById(id);
     const fmt = (n, d=0) => isFinite(n) ? n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) : '-';
@@ -362,6 +328,20 @@
       return Math.round(hi);
     }
 
+    function budgetForProfit(targetProfit, maxIter=30){
+      let lo = 0, hi = 100000;
+      for (let i=0;i<maxIter;i++){
+        const mid = (lo+hi)/2;
+        el('mktBudget').value = mid;
+        const r = calc();
+        const profit = r.profit; // fully-burdened profit (includes VA)
+        if (profit >= targetProfit) hi = mid; else lo = mid;
+      }
+      el('mktBudget').value = Math.round(hi);
+      render();
+      return Math.round(hi);
+    }
+
     // ===== Render =====
     function render(){
       const r = calc();
@@ -375,8 +355,8 @@
 
       // Table rows
       const rows = [
-        { name:'SMS',  budget:r.bSMS, touches:r.touches.sms, deals:r.deals.sms, revenue:r.deals.sms*r.dealSize, cost:r.bSMS, profit:(r.deals.sms*r.dealSize - r.bSMS) },
-        { name:'Calls',budget:r.bCall,touches:r.touches.call,deals:r.deals.call,revenue:r.deals.call*r.dealSize,cost:r.bCall,profit:(r.deals.call*r.dealSize - r.bCall) },
+        { name:'SMS',  budget:r.bSMS, touches:r.touches.sms,   deals:r.deals.sms,   revenue:r.deals.sms*r.dealSize,    cost:r.bSMS,   profit:(r.deals.sms*r.dealSize - r.bSMS) },
+        { name:'Calls',budget:r.bCall,touches:r.touches.call,  deals:r.deals.call,  revenue:r.deals.call*r.dealSize,   cost:r.bCall,  profit:(r.deals.call*r.dealSize - r.bCall) },
         { name:'Letters',budget:r.bLetter,touches:r.touches.letter,deals:r.deals.letter,revenue:r.deals.letter*r.dealSize,cost:r.bLetter,profit:(r.deals.letter*r.dealSize - r.bLetter) },
         { name:'VA',    budget:r.vaSpend, touches:0, deals:0, revenue:0, cost:r.vaSpend, profit:-r.vaSpend, isVA:true }
       ];
@@ -412,14 +392,14 @@
       el('tCost').textContent = money(tCost);
       el('tProfit').textContent = money(tProfit);
 
-      // CPA & Profit/deal (toggleable VA overhead)
+      // CPA & Profit/deal (toggleable VA overhead for CPA only)
       const costForCPA = treatVAAsOverhead ? r.mktCost : (r.mktCost + r.vaSpend);
       const blendedCPA = tDeals>0 ? costForCPA / tDeals : 0;
       const profitPerDeal = tDeals>0 ? tProfit / tDeals : 0;
       el('cpa').textContent = money(blendedCPA,0);
       el('ppd').textContent = money(profitPerDeal,0);
 
-      // Expose snapshot for CSV
+      // Snapshot for CSV export
       window.__roiSnapshot = {
         timestamp: new Date().toISOString(),
         treatVAAsOverhead,
@@ -437,9 +417,7 @@
           {channel:'Letters', budget:r.bLetter, touches:r.touches.letter, deals:r.deals.letter, revenue:r.deals.letter*r.dealSize, cost:r.bLetter, profit:(r.deals.letter*r.dealSize - r.bLetter)},
           {channel:'VA', budget:r.vaSpend, touches:0, deals:0, revenue:0, cost:r.vaSpend, profit:-r.vaSpend}
         ],
-        totals: {
-          budget: tBudget, touches: tTouches, deals: tDeals, revenue: tRevenue, cost: tCost, profit: tProfit, roi: r.roi
-        }
+        totals: { budget: tBudget, touches: tTouches, deals: tDeals, revenue: tRevenue, cost: tCost, profit: tProfit, roi: r.roi }
       };
     }
 
@@ -522,12 +500,14 @@
       treatVAAsOverhead = false;
 
       el('goalDeals').value = 3;
+      el('goalProfit').value = 30000;
       el('goalResult').textContent = '';
+      el('goalResultProfit').textContent = '';
 
       render();
     });
 
-    // Advanced toggle & solver
+    // Advanced toggle & solvers
     el('toggleOverhead').addEventListener('change', e=>{
       treatVAAsOverhead = e.target.checked;
       render();
@@ -538,8 +518,14 @@
       const budget = budgetForDeals(target);
       el('goalResult').textContent = `≈ ${money(budget)} needed/month`;
     });
+    el('goalSolveProfit').addEventListener('click', ()=>{
+      const target = +el('goalProfit').value || 0;
+      if (target <= 0) return;
+      const budget = budgetForProfit(target);
+      el('goalResultProfit').textContent = `≈ ${money(budget)} needed/month`;
+    });
 
-    // PWA: install button + SW
+    // PWA: SW + install button
     let deferredPrompt = null;
     const installBtn = el('installBtn');
 
@@ -573,4 +559,3 @@
   </script>
 </body>
 </html>
-

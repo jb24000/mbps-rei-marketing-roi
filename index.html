@@ -156,7 +156,7 @@
             <label for="useVABudget" class="text-sm text-gray-700">Enter VA budget directly</label>
           </div>
 
-          <div id="vaByPeople" class="grid grid-cols-3 gap-4">
+        <div id="vaByPeople" class="grid grid-cols-3 gap-4">
             <div>
               <label class="label"># of VAs</label>
               <input id="vaCount" type="number" class="input" value="1" min="0">
@@ -218,12 +218,34 @@
       </div>
     </section>
 
+    <!-- === Advanced Settings + Goal Seek === -->
+    <div class="mt-6 card bg-white shadow-soft p-5">
+      <h2 class="font-semibold mb-3">Advanced Settings</h2>
+      <div class="flex items-center gap-2 mb-4">
+        <input id="toggleOverhead" type="checkbox" class="h-4 w-4">
+        <label for="toggleOverhead" class="text-sm text-gray-700">
+          Treat VA as fixed overhead (exclude from CPA)
+        </label>
+      </div>
+
+      <div class="border-t pt-4 mt-4">
+        <label class="label">Goal Seek — Target Deals/Month</label>
+        <div class="flex gap-3 items-center mt-1">
+          <input id="goalDeals" type="number" value="3" class="input w-32">
+          <button id="goalSolve" class="px-3 py-2 rounded-xl bg-brand-600 text-white hover:bg-brand-700 text-sm">
+            Solve Budget
+          </button>
+          <span id="goalResult" class="text-sm text-gray-700 ml-1"></span>
+        </div>
+      </div>
+    </div>
+
     <section class="mt-6 card bg-white shadow-soft p-5">
       <h2 class="font-semibold mb-2">How It Works</h2>
       <ul class="list-disc ml-6 text-sm space-y-1 text-gray-700">
         <li>Channel budget = Total Marketing Budget × allocation % (normalized to 100% if enabled).</li>
         <li>Touches = Channel budget ÷ unit cost. Deals = Touches ÷ touches-per-deal.</li>
-        <li>Revenue = Deals × Average Deal Size. Cost = Channel budget + VA spend.</li>
+        <li>Revenue = Deals × Average Deal Size. Cost = Channel budget + VA spend (or exclude from CPA if toggled).</li>
         <li>ROI = (Revenue − (Marketing + VA)) ÷ (Marketing + VA).</li>
       </ul>
     </section>
@@ -262,6 +284,7 @@
       return weekly * 4.33; // monthly
     }
 
+    // ===== Core calc =====
     function calc(){
       // Inputs
       let mkt = +el('mktBudget').value || 0;
@@ -323,6 +346,23 @@
       };
     }
 
+    // ===== Advanced flags & goal seek =====
+    let treatVAAsOverhead = false;
+
+    function budgetForDeals(targetDeals, maxIter=30){
+      let lo = 0, hi = 100000; // search up to $100k/month
+      for (let i=0;i<maxIter;i++){
+        const mid = (lo+hi)/2;
+        el('mktBudget').value = mid;
+        const r = calc();
+        if (r.totalDeals >= targetDeals) hi = mid; else lo = mid;
+      }
+      el('mktBudget').value = Math.round(hi);
+      render();
+      return Math.round(hi);
+    }
+
+    // ===== Render =====
     function render(){
       const r = calc();
 
@@ -372,15 +412,17 @@
       el('tCost').textContent = money(tCost);
       el('tProfit').textContent = money(tProfit);
 
-      // CPA & Profit/deal
-      const blendedCPA = tDeals>0 ? tCost / tDeals : 0;
+      // CPA & Profit/deal (toggleable VA overhead)
+      const costForCPA = treatVAAsOverhead ? r.mktCost : (r.mktCost + r.vaSpend);
+      const blendedCPA = tDeals>0 ? costForCPA / tDeals : 0;
       const profitPerDeal = tDeals>0 ? tProfit / tDeals : 0;
       el('cpa').textContent = money(blendedCPA,0);
       el('ppd').textContent = money(profitPerDeal,0);
 
-      // Expose latest snapshot for CSV/export
+      // Expose snapshot for CSV
       window.__roiSnapshot = {
         timestamp: new Date().toISOString(),
+        treatVAAsOverhead,
         inputs: {
           marketing_budget: r.mkt,
           alloc_sms_pct: +el('pctSMS').value, alloc_call_pct: +el('pctCall').value, alloc_letter_pct:+el('pctLetter').value,
@@ -401,7 +443,7 @@
       };
     }
 
-    // CSV export
+    // ===== CSV export =====
     function toCSV(){
       const s = window.__roiSnapshot;
       if (!s) return '';
@@ -419,6 +461,7 @@
       lines.push(`Inputs,TPD Letter,${s.inputs.tpd_letter}`);
       lines.push(`Inputs,Average Deal Size,${s.inputs.avg_deal_size}`);
       lines.push(`Inputs,VA Spend,${s.inputs.va_spend}`);
+      lines.push(`Inputs,Treat VA As Overhead,${s.treatVAAsOverhead}`);
       lines.push('');
       lines.push('Channel,Budget,Touches,Deals,Revenue,Cost,Profit');
       s.channels.forEach(c=>{
@@ -443,7 +486,7 @@
       URL.revokeObjectURL(url);
     }
 
-    // UI wiring
+    // ===== UI wiring =====
     [...ids].forEach(id => {
       const node = el(id);
       if (!node) return;
@@ -451,7 +494,7 @@
       node.addEventListener(evt, render);
     });
 
-    // VA toggle
+    // VA toggle (budget vs people)
     el('useVABudget').addEventListener('change', () => {
       const useB = el('useVABudget').checked;
       el('vaByBudget').classList.toggle('hidden', !useB);
@@ -475,7 +518,25 @@
       el('vaCount').value = 1; el('vaRate').value = 6; el('vaHours').value = 20;
       el('vaBudget').value = 0;
 
+      el('toggleOverhead').checked = false;
+      treatVAAsOverhead = false;
+
+      el('goalDeals').value = 3;
+      el('goalResult').textContent = '';
+
       render();
+    });
+
+    // Advanced toggle & solver
+    el('toggleOverhead').addEventListener('change', e=>{
+      treatVAAsOverhead = e.target.checked;
+      render();
+    });
+    el('goalSolve').addEventListener('click', ()=>{
+      const target = +el('goalDeals').value || 0;
+      if (target <= 0) return;
+      const budget = budgetForDeals(target);
+      el('goalResult').textContent = `≈ ${money(budget)} needed/month`;
     });
 
     // PWA: install button + SW
@@ -499,7 +560,7 @@
       installBtn.addEventListener('click', async () => {
         if (!deferredPrompt) return;
         deferredPrompt.prompt();
-        await deferredPrompt.userChoice; // result.outcome === 'accepted' | 'dismissed'
+        await deferredPrompt.userChoice;
         deferredPrompt = null;
         installBtn.classList.add('hidden');
       });
@@ -512,3 +573,4 @@
   </script>
 </body>
 </html>
+

@@ -642,26 +642,26 @@
     // ---------------------------------------
     // Assumption Presets (update ALL plans)
     // ---------------------------------------
-    const presets = {
-      baseline: () => {
-        plans.sms.cost=0.012;  plans.sms.leadRate=2;   plans.sms.dealRate=2;
-        plans.calls.cost=0.06;  plans.calls.leadRate=10; plans.calls.dealRate=17;
-        plans.mail.cost=0.85;   plans.mail.leadRate=1; plans.mail.dealRate=4;
-        plans.ppl.cost=100;     plans.ppl.dealRate=3;
-      },
-      aggressive: () => {
-        plans.sms.cost=0.012;   plans.sms.leadRate=2.5; plans.sms.dealRate=2.5;
-        plans.calls.cost=0.055; plans.calls.leadRate=20; plans.calls.dealRate=20;
-        plans.mail.cost=0.80;   plans.mail.leadRate=2;  plans.mail.dealRate=5;
-        plans.ppl.cost=80;      plans.ppl.dealRate=4;
-      },
-      conservative: () => {
-        plans.sms.cost=0.012;   plans.sms.leadRate=1.5; plans.sms.dealRate=1.5;
-        plans.calls.cost=0.065; plans.calls.leadRate=5;  plans.calls.dealRate=15;
-        plans.mail.cost=0.90;   plans.mail.leadRate=0.5;plans.mail.dealRate=3;
-        plans.ppl.cost=120;     plans.ppl.dealRate=2;
-      }
-    };
+  const presets = {
+  baseline: () => {
+    plans.sms.cost   = 0.012; plans.sms.leadRate = 0.02;  plans.sms.dealRate = 75;
+    plans.calls.cost = 0.065; plans.calls.leadRate = 0.8;  plans.calls.dealRate = 1.33;
+    plans.mail.cost  = 0.85;  plans.mail.leadRate = 1;     plans.mail.dealRate = 3.3;
+    plans.ppl.cost   = 200;   plans.ppl.leadRate = 100;   plans.ppl.dealRate = 5;
+  },
+  aggressive: () => {
+    plans.sms.leadRate   = 0.025; plans.sms.dealRate   = 86.25;
+    plans.calls.leadRate = 1.0;   plans.calls.dealRate = 1.53;
+    plans.mail.leadRate  = 1.25;  plans.mail.dealRate  = 3.8;
+    plans.ppl.leadRate   = 100;   plans.ppl.dealRate   = 5.75;
+  },
+  conservative: () => {
+    plans.sms.leadRate   = 0.016; plans.sms.dealRate   = 63.75;
+    plans.calls.leadRate = 0.64;  plans.calls.dealRate = 1.13;
+    plans.mail.leadRate  = 0.8;   plans.mail.dealRate  = 2.8;
+    plans.ppl.leadRate   = 100;   plans.ppl.dealRate   = 4.25;
+  }
+};
 
     // ---------------------------------------
     // VA & Economics

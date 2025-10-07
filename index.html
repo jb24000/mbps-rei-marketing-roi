@@ -37,7 +37,7 @@
     .glass { border-radius: 18px; border: 1px solid rgba(255,255,255,.10);
       background: rgba(17,24,39,.68); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
       box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .light .glass, :root:not(.dark) .glass { background: rgba(255,255,255,.86); }
+    :root:not(.dark) .glass { background: rgba(255,255,255,.86); }
     .metric { border-radius: 14px; border: 1px solid rgba(255,255,255,.10);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)); }
     .input { width:100%; border-radius:12px; padding:12px 14px; border:1px solid rgba(148,163,184,.3);
@@ -78,7 +78,7 @@
         <div class="h-10 w-10 grid place-items-center rounded-2xl bg-brand-500/20 text-brand-300 text-xl shadow-glow">🧮</div>
         <div>
           <h1 class="text-xl font-extrabold tracking-tight">REI Marketing ROI — MBPS</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Plan-based modeling with combined totals</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Plan-based modeling with combined totals (Funnel: Spend → Leads → Contracts)</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -96,39 +96,39 @@
 
     <!-- KPIs -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="metric p-4 glass light:!bg-white/70">
-        <div class="text-[11px] label">Total Marketing Budget</div>
-        <div id="kpiMkt" class="number text-2xl font-extrabold">$0</div>
-      </div>
-      <div class="metric p-4 glass light:!bg-white/70">
-        <div class="text-[11px] label">VA Spend</div>
-        <div id="kpiVA" class="number text-2xl font-extrabold">$0</div>
-      </div>
-      <div class="metric p-4 glass light:!bg-white/70">
-        <div class="text-[11px] label">Deals / Mo</div>
-        <div id="kpiDeals" class="number text-2xl font-extrabold">0.00</div>
-      </div>
-      <div class="metric p-4 glass light:!bg-white/70">
-        <div class="text-[11px] label">ROI</div>
-        <div id="kpiROI" class="number text-2xl font-extrabold">0%</div>
-      </div>
+      <div class="metric p-4 glass"><div class="text-[11px] label">Total Marketing Budget</div><div id="kpiMkt" class="number text-2xl font-extrabold">$0</div></div>
+      <div class="metric p-4 glass"><div class="text-[11px] label">VA Spend</div><div id="kpiVA" class="number text-2xl font-extrabold">$0</div></div>
+      <div class="metric p-4 glass"><div class="text-[11px] label">Deals / Mo</div><div id="kpiDeals" class="number text-2xl font-extrabold">0.00</div></div>
+      <div class="metric p-4 glass"><div class="text-[11px] label">ROI</div><div id="kpiROI" class="number text-2xl font-extrabold">0%</div></div>
     </section>
 
-    <!-- Plan Card with LEFT-ALIGNED SELECTOR -->
+    <!-- Plan Card with LEFT-ALIGNED SELECTOR + PRESETS -->
     <section class="glass p-6 md:p-8">
-      <div class="flex items-center justify-between gap-4 mb-5">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
         <div class="flex items-center gap-3">
           <label class="label">Select Marketing Plan</label>
           <div class="relative">
             <select id="planSelector" class="pl-10 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/40 hover:shadow-glow text-sm appearance-none">
               <option value="sms">📱 SMS</option>
               <option value="calls">☎️ Calls</option>
-              <option value="letters">✉️ Letters</option>
+              <option value="mail">✉️ Mail</option>
+              <option value="ppl">💻 PPC / PPL</option>
             </select>
             <span class="pointer-events-none absolute left-3 top-2.5">🔀</span>
             <span class="pointer-events-none absolute right-3 top-2.5">▾</span>
           </div>
+
+          <div class="relative ml-4">
+            <select id="presetSelector" class="pl-10 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/40 hover:shadow-glow text-sm appearance-none">
+              <option value="baseline">⚖️ Baseline</option>
+              <option value="aggressive">🔥 Aggressive</option>
+              <option value="conservative">🧊 Conservative</option>
+            </select>
+            <span class="pointer-events-none absolute left-3 top-2.5">🎛️</span>
+            <span class="pointer-events-none absolute right-3 top-2.5">▾</span>
+          </div>
         </div>
+
         <div class="flex items-center gap-2">
           <input id="planEnabled" type="checkbox" class="h-4 w-4" checked />
           <label for="planEnabled" class="text-sm text-slate-600 dark:text-slate-300">Include this plan in totals</label>
@@ -144,24 +144,26 @@
               <label class="label">Budget for this Plan ($/mo)</label>
               <input id="pBudget" type="number" class="input" min="0" value="2500" />
             </div>
+
+            <!-- Cost input switches label depending on plan type -->
             <div>
-              <label class="label">Unit Cost ($ per touch)</label>
-              <input id="pCost" type="number" step="0.0001" class="input" min="0" value="0.02" />
+              <label id="costLabel" class="label">Cost per Touch</label>
+              <input id="pCost" type="number" step="0.0001" class="input" min="0" value="0.012" />
             </div>
           </div>
         </div>
 
-        <!-- Column 2: Conversion -->
+        <!-- Column 2: Funnel Rates -->
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-3">Conversion</h2>
+          <h2 class="text-sm font-semibold text-brand-300 mb-3">Funnel (This Plan)</h2>
           <div class="grid gap-4">
             <div>
-              <label class="label">Touches per Deal</label>
-              <input id="pTPD" type="number" class="input" min="1" value="2500" />
+              <label id="leadRateLabel" class="label">Touch → Lead %</label>
+              <input id="pLeadRate" type="number" step="0.01" class="input" min="0" max="100" value="2" />
             </div>
             <div>
-              <label class="label">Expected Touches (auto)</label>
-              <input id="pTouches" class="input" value="0" disabled />
+              <label id="dealRateLabel" class="label">Lead → Contract %</label>
+              <input id="pDealRate" type="number" step="0.01" class="input" min="0" max="100" value="2" />
             </div>
           </div>
         </div>
@@ -171,7 +173,15 @@
           <h2 class="text-sm font-semibold text-brand-300 mb-3">This Plan — Output</h2>
           <div class="grid gap-4">
             <div>
-              <label class="label">Deals / Mo (this plan)</label>
+              <label class="label">Touches / Mo (est.)</label>
+              <input id="pTouches" class="input" value="0" disabled />
+            </div>
+            <div>
+              <label class="label">Leads / Mo (est.)</label>
+              <input id="pLeads" class="input" value="0" disabled />
+            </div>
+            <div>
+              <label class="label">Deals / Mo (est.)</label>
               <input id="pDeals" class="input" value="0.00" disabled />
             </div>
             <div>
@@ -184,7 +194,7 @@
 
       <!-- VA + Global Settings -->
       <div class="mt-8 grid md:grid-cols-3 gap-6">
-        <div class="">
+        <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-3">VA Spend</h2>
           <div class="space-y-3">
             <div class="flex items-center gap-2">
@@ -202,7 +212,7 @@
           </div>
         </div>
 
-        <div class="">
+        <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-3">Economics</h2>
           <div class="grid gap-4">
             <div>
@@ -216,11 +226,11 @@
           </div>
         </div>
 
-        <div class="">
+        <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-3">Per-Deal Metrics</h2>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div class="p-3 rounded-xl border border-white/10 bg-white/60 dark:bg-white/5">
-              <div class="text-slate-500 dark:text-slate-400">Cost per Deal</div>
+              <div class="text-slate-500 dark:text-slate-400">Cost per Deal (marketing only)</div>
               <div id="cpa" class="number font-semibold">$0</div>
             </div>
             <div class="p-3 rounded-xl border border-white/10 bg-white/60 dark:bg-white/5">
@@ -259,11 +269,11 @@
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="text-left text-slate-500 dark:text-slate-400 border-b border-white/10">
-            <tr><th>Plan</th><th>Budget</th><th>Touches</th><th>Deals</th><th>Revenue</th><th>Cost</th><th>Profit</th></tr>
+            <tr><th>Plan</th><th>Budget</th><th>Touches</th><th>Leads</th><th>Deals</th><th>Revenue</th><th>Cost</th><th>Profit</th></tr>
           </thead>
           <tbody id="tableBody" class="text-slate-800 dark:text-slate-200"></tbody>
           <tfoot class="border-t border-white/10 font-semibold">
-            <tr><td>Totals</td><td id="tBudget"></td><td id="tTouches"></td><td id="tDeals"></td><td id="tRevenue"></td><td id="tCost"></td><td id="tProfit"></td></tr>
+            <tr><td>Totals</td><td id="tBudget"></td><td id="tTouches"></td><td id="tLeads"></td><td id="tDeals"></td><td id="tRevenue"></td><td id="tCost"></td><td id="tProfit"></td></tr>
           </tfoot>
         </table>
       </div>
@@ -287,13 +297,39 @@
       localStorage.setItem('mbps_theme', mode);
     });
 
-    // --- Plan state (independent) ---
+    // ---- Plans (funnel model) ----
+    // type: 'touch' channels use cost per touch & lead/deal % (sms, calls, mail)
+    // type: 'lead' channels use cost per lead & lead->deal % (ppl)
     const plans = {
-      sms:    { name:'SMS',     enabled:true,  budget:2500, cost:0.02, tpd:2500, icon:'📱' },
-      calls:  { name:'Calls',   enabled:true,  budget:1500, cost:0.02, tpd:600,  icon:'☎️' },
-      letters:{ name:'Letters', enabled:true,  budget:1000, cost:0.85, tpd:400,  icon:'✉️' }
+      sms:  { type:'touch', name:'SMS',   icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 },
+      calls:{ type:'touch', name:'Calls', icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 },
+      mail: { type:'touch', name:'Mail',  icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 },
+      ppl:  { type:'lead',  name:'PPC/PPL',icon:'💻',enabled:false, budget:5000, cost:100,   leadRate:100, dealRate:3 }
+      // For 'lead' type, leadRate is a fixed 100% (budget/cost = leads). We keep the field for uniformity.
     };
     let selectedPlan = 'sms';
+
+    // Presets adjust ALL plans at once
+    const presets = {
+      baseline: () => {
+        plans.sms.cost=0.012; plans.sms.leadRate=2;  plans.sms.dealRate=2;
+        plans.calls.cost=0.06; plans.calls.leadRate=10; plans.calls.dealRate=17;
+        plans.mail.cost=0.85;  plans.mail.leadRate=1; plans.mail.dealRate=4;
+        plans.ppl.cost=100;    plans.ppl.dealRate=3;
+      },
+      aggressive: () => {
+        plans.sms.cost=0.012;  plans.sms.leadRate=2.5; plans.sms.dealRate=2.5;
+        plans.calls.cost=0.055;plans.calls.leadRate=20; plans.calls.dealRate=20;
+        plans.mail.cost=0.80;  plans.mail.leadRate=2;  plans.mail.dealRate=5;
+        plans.ppl.cost=80;     plans.ppl.dealRate=4;
+      },
+      conservative: () => {
+        plans.sms.cost=0.012;  plans.sms.leadRate=1.5; plans.sms.dealRate=1.5;
+        plans.calls.cost=0.065;plans.calls.leadRate=5;  plans.calls.dealRate=15;
+        plans.mail.cost=0.90;  plans.mail.leadRate=0.5;plans.mail.dealRate=3;
+        plans.ppl.cost=120;    plans.ppl.dealRate=2;
+      }
+    };
 
     // --- VA & global economics ---
     function getVASpend(){
@@ -303,96 +339,128 @@
     }
     let treatVAAsOverhead = false;
 
-    // --- Per-plan calc ---
-    function planCalc(plan){
-      const touches = plan.cost>0 ? plan.budget / plan.cost : 0;
-      const deals = plan.tpd>0 ? touches / plan.tpd : 0;
-      return { touches, deals };
+    // ---- Per-plan math (funnel) ----
+    function calcPlan(p, dealSize){
+      if (!p.enabled) return { touches:0, leads:0, deals:0, revenue:0, cost:0, profit:0 };
+
+      if (p.type === 'touch'){
+        const touches = p.cost>0 ? (p.budget / p.cost) : 0;
+        const leads = touches * (p.leadRate/100);
+        const deals = leads * (p.dealRate/100);
+        const revenue = deals * dealSize;
+        const cost = p.budget;
+        const profit = revenue - cost;
+        return { touches, leads, deals, revenue, cost, profit };
+      } else { // 'lead' type (PPC/PPL)
+        const leads = p.cost>0 ? (p.budget / p.cost) : 0;
+        const deals = leads * (p.dealRate/100);
+        const revenue = deals * dealSize;
+        const cost = p.budget;
+        const profit = revenue - cost;
+        return { touches:0, leads, deals, revenue, cost, profit };
+      }
     }
 
     function combinedCalc(){
       const dealSize = +el('dealSize').value || 0;
       const vaSpend = getVASpend();
-      let totalBudget=0, totalTouches=0, totalDeals=0;
 
       const rows = Object.entries(plans).map(([key,p])=>{
-        if (!p.enabled) return { key, name:p.name, icon:p.icon, budget:0,touches:0,deals:0,revenue:0,cost:0,profit:0, disabled:true };
-        const { touches, deals } = planCalc(p);
-        const revenue = deals * dealSize;
-        const cost = p.budget;
-        const profit = revenue - cost;
-        totalBudget += p.budget; totalTouches += touches; totalDeals += deals;
-        return { key, name:p.name, icon:p.icon, budget:p.budget, touches, deals, revenue, cost, profit };
+        const r = calcPlan(p, dealSize);
+        return { key, name:p.name, icon:p.icon, ...r };
       });
 
-      const revenue = rows.reduce((a,r)=>a+r.revenue,0);
       const mktCost = rows.reduce((a,r)=>a+r.cost,0);
       const totalCost = mktCost + vaSpend;
+      const revenue = rows.reduce((a,r)=>a+r.revenue,0);
       const profit = revenue - totalCost;
       const roi = totalCost>0 ? (profit/totalCost) : 0;
 
-      return { rows, totalBudget, totalTouches, totalDeals, revenue, mktCost, vaSpend, totalCost, profit, roi, dealSize };
+      const totals = {
+        budget: mktCost + vaSpend,
+        touches: rows.reduce((a,r)=>a+r.touches,0),
+        leads: rows.reduce((a,r)=>a+r.leads,0),
+        deals: rows.reduce((a,r)=>a+r.deals,0),
+        revenue, mktCost, vaSpend, totalCost, profit, roi, dealSize
+      };
+      return { rows, totals };
     }
 
     // --- Goal Seek: adjust selected plan's budget to meet global target ---
     function setSelectedBudget(val){ plans[selectedPlan].budget = Math.max(0, Math.round(val)); }
     function budgetForDeals(targetDeals, maxIter=32){
-      let lo=0, hi=100000; // adjust only selected plan; others fixed
-      const original = plans[selectedPlan].budget;
+      let lo=0, hi=100000;
       for (let i=0;i<maxIter;i++){
         const mid=(lo+hi)/2; setSelectedBudget(mid);
-        const r = combinedCalc();
-        (r.totalDeals >= targetDeals) ? hi=mid : lo=mid;
+        const r = combinedCalc().totals; (r.deals >= targetDeals) ? hi=mid : lo=mid;
       }
       setSelectedBudget(hi); syncPlanFields(); render();
       return hi;
     }
     function budgetForProfit(targetProfit, maxIter=32){
       let lo=0, hi=100000;
-      const original = plans[selectedPlan].budget;
       for (let i=0;i<maxIter;i++){
         const mid=(lo+hi)/2; setSelectedBudget(mid);
-        const r = combinedCalc();
-        (r.profit >= targetProfit) ? hi=mid : lo=mid;
+        const r = combinedCalc().totals; (r.profit >= targetProfit) ? hi=mid : lo=mid;
       }
       setSelectedBudget(hi); syncPlanFields(); render();
       return hi;
     }
 
     // --- UI sync for selected plan fields ---
+    function syncCostLabels(){
+      const p = plans[selectedPlan];
+      if (p.type === 'touch'){
+        el('costLabel').textContent = 'Cost per Touch';
+        el('leadRateLabel').textContent = 'Touch → Lead %';
+        el('dealRateLabel').textContent = 'Lead → Contract %';
+      } else {
+        el('costLabel').textContent = 'Cost per Lead';
+        el('leadRateLabel').textContent = 'Lead Rate (fixed)';
+        el('dealRateLabel').textContent = 'Lead → Contract %';
+      }
+    }
+
     function syncPlanFields(){
       const p = plans[selectedPlan];
       el('planEnabled').checked = !!p.enabled;
       el('pBudget').value = p.budget;
       el('pCost').value = p.cost;
-      el('pTPD').value = p.tpd;
+      el('pLeadRate').value = p.leadRate;
+      el('pDealRate').value = p.dealRate;
+      syncCostLabels();
 
-      const c = planCalc(p);
-      el('pTouches').value = fmt(c.touches,0);
-      const dealSize = +el('dealSize').value || 0;
-      el('pDeals').value = fmt(c.deals,2);
-      el('pRevenue').value = money(c.deals * dealSize,0);
+      // Quick outputs for current plan
+      const sz = +el('dealSize').value || 0;
+      const r = calcPlan(p, sz);
+      el('pTouches').value = fmt(r.touches,0);
+      el('pLeads').value = fmt(r.leads,0);
+      el('pDeals').value = fmt(r.deals,2);
+      el('pRevenue').value = money(r.revenue,0);
     }
 
     // --- Render totals + table + KPIs ---
     function render(){
-      const r = combinedCalc();
+      const { rows, totals } = combinedCalc();
 
       // KPIs
-      el('kpiMkt').textContent = money(r.mktCost);
-      el('kpiVA').textContent = money(r.vaSpend);
-      el('kpiDeals').textContent = fmt(r.totalDeals,2);
-      el('kpiROI').textContent = fmt(r.roi*100,0)+'%';
+      el('kpiMkt').textContent = money(totals.mktCost);
+      el('kpiVA').textContent = money(totals.vaSpend);
+      el('kpiDeals').textContent = fmt(totals.deals,2);
+      el('kpiROI').textContent = fmt(totals.roi*100,0)+'%';
 
       // Table
       const body = el('tableBody'); body.innerHTML='';
-      r.rows.forEach(row=>{
+      rows.forEach(row=>{
+        const p = plans[row.key];
+        const disabled = !p.enabled;
         const tr = document.createElement('tr');
         tr.className = 'border-b border-white/10 last:border-0';
         tr.innerHTML = `
-          <td class="py-2 ${row.disabled?'text-slate-500':''}">${row.icon} ${row.name}${row.disabled?' (off)':''}</td>
-          <td class="number">${money(row.budget)}</td>
+          <td class="py-2 ${disabled?'text-slate-500':''}">${p.icon} ${p.name}${disabled?' (off)':''}</td>
+          <td class="number">${money(row.cost)}</td>
           <td class="number">${fmt(row.touches,0)}</td>
+          <td class="number">${fmt(row.leads,0)}</td>
           <td class="number">${fmt(row.deals,2)}</td>
           <td class="number">${money(row.revenue)}</td>
           <td class="number">${money(row.cost)}</td>
@@ -400,22 +468,23 @@
         body.appendChild(tr);
       });
 
-      // Totals
-      el('tBudget').textContent = money(r.mktCost + r.vaSpend);
-      el('tTouches').textContent = fmt(r.totalTouches,0);
-      el('tDeals').textContent = fmt(r.totalDeals,2);
-      el('tRevenue').textContent = money(r.revenue);
-      el('tCost').textContent = money(r.totalCost);
-      el('tProfit').textContent = money(r.profit);
+      // Totals in table
+      el('tBudget').textContent = money(totals.budget);
+      el('tTouches').textContent = fmt(totals.touches,0);
+      el('tLeads').textContent = fmt(totals.leads,0);
+      el('tDeals').textContent = fmt(totals.deals,2);
+      el('tRevenue').textContent = money(totals.revenue);
+      el('tCost').textContent = money(totals.totalCost);
+      el('tProfit').textContent = money(totals.profit);
 
-      // CPA & Profit/Deal
-      const costForCPA = treatVAAsOverhead ? r.mktCost : r.totalCost;
-      const blendedCPA = r.totalDeals>0 ? costForCPA / r.totalDeals : 0;
-      const profitPerDeal = r.totalDeals>0 ? r.profit / r.totalDeals : 0;
-      el('cpa').textContent = money(blendedCPA,0);
-      el('ppd').textContent = money(profitPerDeal,0);
+      // CPA (marketing-only) & Profit/Deal
+      const costForCPA = treatVAAsOverhead ? totals.mktCost : totals.totalCost;
+      const cpa = totals.deals>0 ? (costForCPA / totals.deals) : 0;
+      const ppd = totals.deals>0 ? (totals.profit / totals.deals) : 0;
+      el('cpa').textContent = money(cpa,0);
+      el('ppd').textContent = money(ppd,0);
 
-      // Update current plan quick outputs
+      // Keep current plan outputs fresh
       syncPlanFields();
 
       // Snapshot for CSV
@@ -423,11 +492,11 @@
         timestamp: new Date().toISOString(),
         plans: JSON.parse(JSON.stringify(plans)),
         totals: {
-          budget: r.mktCost + r.vaSpend, touches: r.totalTouches, deals: r.totalDeals,
-          revenue: r.revenue, cost: r.totalCost, profit: r.profit, roi: r.roi,
-          va_spend: r.vaSpend
+          budget: totals.budget, touches: totals.touches, leads: totals.leads, deals: totals.deals,
+          revenue: totals.revenue, cost: totals.totalCost, profit: totals.profit, roi: totals.roi,
+          va_spend: totals.vaSpend
         },
-        deal_size: r.dealSize,
+        deal_size: totals.dealSize,
         treatVAAsOverhead
       };
     }
@@ -440,40 +509,60 @@
       L.push(`Inputs,Deal Size,${s.deal_size}`);
       L.push(`Inputs,VA Spend,${s.totals.va_spend}`);
       L.push(`Inputs,Treat VA As Overhead,${s.treatVAAsOverhead}`); L.push('');
-      L.push('Plan,Budget,Cost/Touch,TPD,Touches,Deals,Revenue,Cost,Profit,Included');
+      L.push('Plan,Type,Budget,CostUnit,Lead%,Deal%,Touches,Leads,Deals,Revenue,Cost,Profit,Included');
       Object.entries(s.plans).forEach(([k,p])=>{
-        const touches = p.cost>0 ? p.budget/p.cost : 0;
-        const deals = p.tpd>0 ? touches/p.tpd : 0;
-        const revenue = deals * s.deal_size;
-        const cost = p.budget;
-        const profit = revenue - cost;
-        L.push([p.name,p.budget,p.cost,p.tpd,touches,deals,revenue,cost,profit,p.enabled].join(','));
+        const isTouch = p.type==='touch';
+        const dealSize = s.deal_size;
+        let touches=0, leads=0, deals=0, revenue=0, cost=p.budget, profit=0;
+        if (isTouch){
+          touches = p.cost>0 ? p.budget/p.cost : 0;
+          leads = touches * (p.leadRate/100);
+          deals = leads * (p.dealRate/100);
+        } else {
+          leads = p.cost>0 ? p.budget/p.cost : 0;
+          deals = leads * (p.dealRate/100);
+        }
+        revenue = deals * dealSize; profit = revenue - cost;
+        L.push([p.name,p.type,p.budget,p.cost,p.leadRate,p.dealRate,touches,leads,deals,revenue,cost,profit,p.enabled].join(','));
       });
       L.push('');
-      L.push('Totals,Budget,Touches,Deals,Revenue,Cost,Profit,ROI');
-      L.push(['Totals', s.totals.budget, s.totals.touches, s.totals.deals, s.totals.revenue, s.totals.cost, s.totals.profit, s.totals.roi].join(','));
+      L.push('Totals,Budget,Touches,Leads,Deals,Revenue,Cost,Profit,ROI');
+      L.push(['Totals', s.totals.budget, s.totals.touches, s.totals.leads, s.totals.deals, s.totals.revenue, s.totals.cost, s.totals.profit, s.totals.roi].join(','));
       return L.join('\n');
     }
     function downloadCSV(){
       const blob = new Blob([toCSV()], {type:'text/csv;charset=utf-8;'});
       const url = URL.createObjectURL(blob);
       const a=document.createElement('a'), stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-      a.href=url; a.download=`rei-roi-plans-${stamp}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      a.href=url; a.download=`rei-roi-funnel-${stamp}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
     // Wire plan selector + fields
     function applyPlanFieldChanges(){
       const p = plans[selectedPlan];
       p.enabled = el('planEnabled').checked;
-      p.budget = +el('pBudget').value || 0;
-      p.cost   = +el('pCost').value   || 0;
-      p.tpd    = Math.max(1, +el('pTPD').value || 1);
+      p.budget  = +el('pBudget').value || 0;
+      p.cost    = +el('pCost').value   || 0;
+      p.leadRate= +el('pLeadRate').value || 0;
+      p.dealRate= +el('pDealRate').value || 0;
       render();
     }
-    ['planEnabled','pBudget','pCost','pTPD'].forEach(id => el(id).addEventListener('input', applyPlanFieldChanges));
+    ['planEnabled','pBudget','pCost','pLeadRate','pDealRate'].forEach(id => el(id).addEventListener('input', applyPlanFieldChanges));
+
     el('planSelector').addEventListener('change', (e)=>{
       selectedPlan = e.target.value;
+      // Auto-enable newly selected plan
+      plans[selectedPlan].enabled = true;
+      el('planEnabled').checked = true;
       syncPlanFields();
+      render();
+      // Adjust labels for cost/rates per type
+    });
+
+    el('presetSelector').addEventListener('change', (e)=>{
+      const v = e.target.value || 'baseline';
+      (presets[v] || presets.baseline)();
+      syncPlanFields(); render();
     });
 
     // Wire VA + economics
@@ -490,26 +579,32 @@
     el('goalSolve').addEventListener('click', ()=>{
       const t=+el('goalDeals').value||0; if(t<=0) return;
       const b=budgetForDeals(t);
-      el('goalResult').textContent = `Adjusted ${plans[selectedPlan].name} budget to ≈ ${money(b)}/mo`;
+      const name=plans[selectedPlan].name;
+      el('goalResult').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo`;
     });
     el('goalSolveProfit').addEventListener('click', ()=>{
       const t=+el('goalProfit').value||0; if(t<=0) return;
       const b=budgetForProfit(t);
-      el('goalResultProfit').textContent = `Adjusted ${plans[selectedPlan].name} budget to ≈ ${money(b)}/mo`;
+      const name=plans[selectedPlan].name;
+      el('goalResultProfit').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo`;
     });
 
     // Header buttons
     el('csvBtn').addEventListener('click', downloadCSV);
     el('printBtn').addEventListener('click', ()=>window.print());
     el('resetBtn').addEventListener('click', ()=>{
-      plans.sms    = { name:'SMS',     enabled:true,  budget:2500, cost:0.02, tpd:2500, icon:'📱' };
-      plans.calls  = { name:'Calls',   enabled:true,  budget:1500, cost:0.02, tpd:600,  icon:'☎️' };
-      plans.letters= { name:'Letters', enabled:true,  budget:1000, cost:0.85, tpd:400,  icon:'✉️' };
+      // Defaults: SMS on, others off, baseline preset
+      plans.sms  = { type:'touch', name:'SMS',   icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 };
+      plans.calls= { type:'touch', name:'Calls', icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 };
+      plans.mail = { type:'touch', name:'Mail',  icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 };
+      plans.ppl  = { type:'lead',  name:'PPC/PPL',icon:'💻',enabled:false, budget:5000, cost:100,   leadRate:100, dealRate:3 };
       selectedPlan = 'sms';
 
       el('planSelector').value = 'sms';
+      el('presetSelector').value = 'baseline';
       el('planEnabled').checked = true;
-      el('pBudget').value = 2500; el('pCost').value = 0.02; el('pTPD').value = 2500;
+
+      el('pBudget').value = 2500; el('pCost').value = 0.012; el('pLeadRate').value = 2; el('pDealRate').value = 2;
 
       el('useVABudget').checked = false;
       el('vaCount').value = 1; el('vaRate').value = 6; el('vaHours').value = 20; el('vaBudget').value = 0;
@@ -518,13 +613,14 @@
 
       el('goalDeals').value = 3; el('goalProfit').value = 30000;
       el('goalResult').textContent = ''; el('goalResultProfit').textContent = '';
-      render();
+      syncPlanFields(); render();
     });
 
     // PWA install + SW
     let deferredPrompt=null; const installBtn=el('installBtn');
     document.addEventListener('DOMContentLoaded', ()=>{
       el('year').textContent = new Date().getFullYear();
+      presets.baseline();
       syncPlanFields(); render();
       if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(()=>{});
       window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; installBtn.classList.remove('hidden'); });

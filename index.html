@@ -1,19 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
+  <!-- =======================================================================
+       MBPS REI MARKETING ROI — FULL EXPANDED BUILD
+       - Dark "Pro" theme by default
+       - Mobile-first with sticky KPI bar (bottom on phones)
+       - Dual FAB: Recalc + CSV
+       - Plan selector + Assumption Presets
+       - Funnel model: Spend → Leads → Contracts (per plan)
+       - VA overhead toggle, VA spend modes
+       - Goal Seek (Deals / Profit)
+       - PWA hooks (manifest + SW registration)
+     ======================================================================= -->
+
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+
   <title>REI Marketing ROI — MBPS</title>
+
+  <!-- PWA meta -->
   <meta name="theme-color" content="#0ea5e9" />
   <link rel="manifest" href="manifest.json" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
 
-  <!-- Inter font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
-  <!-- Tailwind -->
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -22,7 +42,10 @@
         extend: {
           fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] },
           colors: {
-            brand: {50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',300:'#67e8f9',400:'#22d3ee',500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63'}
+            brand: {
+              50:'#ecfeff',100:'#cffafe',200:'#a5f3fc',300:'#67e8f9',400:'#22d3ee',
+              500:'#06b6d4',600:'#0891b2',700:'#0e7490',800:'#155e75',900:'#164e63'
+            }
           },
           boxShadow: {
             glow: '0 0 0 2px rgba(6,182,212,.25), 0 12px 40px rgba(6,182,212,.20)',
@@ -32,434 +55,783 @@
       }
     }
   </script>
+
+  <!-- Base Styles -->
   <style>
-    :root { color-scheme: light dark; }
-    * { -webkit-tap-highlight-color: transparent; }
+    /* Force Pro dark theme on first load; user can toggle */
+    :root { color-scheme: dark; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:
+        radial-gradient(1000px 600px at -5% -10%, rgba(6,182,212,.15), transparent 60%),
+        radial-gradient(900px 600px at 110% 110%, rgba(14,116,144,.18), transparent 60%),
+        linear-gradient(180deg, #0b1220, #020617 60%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* Glass panels */
     .glass {
-      border-radius: 18px; border: 1px solid rgba(255,255,255,.10);
-      background: rgba(17,24,39,.68); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(17,24,39,.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-    :root:not(.dark) .glass { background: rgba(255,255,255,.86); }
-    .metric { border-radius: 14px; border: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)); }
-    .input { width:100%; border-radius:12px; padding:14px 14px; border:1px solid rgba(148,163,184,.3);
-      background: rgba(255,255,255,.92); font-size:16px; /* prevent iOS zoom */ }
-    .dark .input { background: rgba(2,6,23,.5); color:#E5E7EB; border:1px solid rgba(148,163,184,.25); }
-    select.inputlike { appearance:none; }
-    .input:focus { outline:none; box-shadow:0 0 0 2px rgba(6,182,212,.35); }
-    .label { font-size:14px; font-weight:600; letter-spacing:.02em; color:#6B7280; }
-    .dark .label { color:#94A3B8; }
-    .number { font-variant-numeric: tabular-nums; }
-    @media print { header,.no-print,.sticky-kpis { display:none !important; } body { background:#fff !important; } }
 
-    /* mobile tweaks */
+    /* Metrics blocks */
+    .metric {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+    }
+
+    /* Inputs */
+    .input {
+      width: 100%;
+      border-radius: 12px;
+      padding: 14px 14px;
+      border: 1px solid rgba(148,163,184,.25);
+      background: rgba(2,6,23,.5);
+      color: #E5E7EB;
+      font-size: 16px; /* prevent iOS zoom */
+    }
+    .input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(6,182,212,.35);
+    }
+
+    /* Labels */
+    .label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      color: #94A3B8;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    /* Buttons */
+    .btn {
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      border: 1px solid rgba(148,163,184,.25);
+      background: rgba(15,23,42,.75);
+      color: #E5E7EB;
+      transition: all .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); opacity: .95; }
+    .btn-primary { background: #0891b2; color: white; border-color: rgba(6,182,212,.45); }
+    .btn-brand { background: #06b6d4; color: #fff; border-color: rgba(6,182,212,.45); }
+
+    /* Numeric text */
+    .number { font-variant-numeric: tabular-nums; }
+
+    /* Sticky KPI bar:
+       - bottom on mobile
+       - top on desktop */
     @media (max-width: 640px){
-      .btn { padding:12px 14px !important; font-size:14px !important; border-radius:12px !important; }
-      .header-tools { overflow-x:auto; -webkit-overflow-scrolling: touch; gap: .5rem; }
+      .sticky-kpis {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        background: rgba(2,6,23,.92);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(255,255,255,.10);
+        padding: .5rem calc(.75rem + env(safe-area-inset-right)) calc(.75rem + env(safe-area-inset-bottom)) calc(.75rem + env(safe-area-inset-left));
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: .5rem;
+      }
+      main { padding-bottom: 8.25rem; } /* space for sticky KPIs + FABs */
+      .header-tools { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .header-tools > * { flex: 0 0 auto; }
-      .selector-wrap select { min-width: 220px; }
-      .sticky-kpis { position: sticky; top: 0; z-index: 40; padding-top: .5rem; background: linear-gradient(to bottom, rgba(2,6,23,.7), rgba(2,6,23,0)); backdrop-filter: blur(6px); }
+    }
+    @media (min-width: 641px){
+      .sticky-kpis {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: rgba(2,6,23,.75);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        padding: .75rem 1rem;
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0,1fr));
+        gap: 1rem;
+      }
+    }
+
+    /* Floating Action Buttons (dual) */
+    .fab-dock {
+      position: fixed;
+      right: calc(1rem + env(safe-area-inset-right));
+      bottom: calc(5.25rem + env(safe-area-inset-bottom)); /* above sticky KPIs */
+      z-index: 50;
+      display: flex;
+      gap: .5rem;
+    }
+    @media (min-width: 641px){
+      .fab-dock { bottom: 1.25rem; } /* desktop: place near bottom but above fold */
+    }
+    .fab-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #06b6d4;
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(0,0,0,.35);
+      border: none;
+      font-size: 22px;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    .fab-btn:active { transform: scale(.96); }
+
+    /* Print cleanup */
+    @media print {
+      .no-print, .fab-dock, .sticky-kpis { display: none !important; }
+      body { background: #fff !important; color: #111 !important; }
+      .glass { background: #fff !important; border-color: #e5e7eb !important; }
     }
   </style>
 
+  <!-- Theme boot (persist) -->
   <script>
-    // Theme boot (persist)
     (function(){
+      // Keep Pro theme by default; honor saved choice thereafter
       const saved = localStorage.getItem('mbps_theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (saved === 'light') document.documentElement.classList.remove('dark');
-      else if (saved === 'dark') document.documentElement.classList.add('dark');
-      else if (prefersDark) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.add('dark'); // default dark
     })();
   </script>
 </head>
 
-<body class="font-sans min-h-screen text-slate-800 dark:text-slate-100 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 relative">
-  <!-- BG accents -->
-  <div class="pointer-events-none absolute inset-0 -z-10">
-    <div class="absolute -top-24 -left-24 h-96 w-96 rounded-full blur-3xl opacity-30"
-         style="background: radial-gradient(120px 120px at 50% 50%, rgba(6,182,212,.65), transparent 70%);"></div>
-    <div class="absolute -bottom-24 -right-24 h-[28rem] w-[28rem] rounded-full blur-3xl opacity-25"
-         style="background: radial-gradient(140px 140px at 50% 50%, rgba(14,116,144,.55), transparent 70%);"></div>
-  </div>
+<body>
 
-  <!-- Header -->
+  <!-- =======================================================================
+       HEADER
+     ======================================================================= -->
   <header class="no-print">
     <div class="max-w-5xl mx-auto px-4 py-4 sm:py-5">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="h-10 w-10 grid place-items-center rounded-2xl bg-brand-500/20 text-brand-300 text-xl shadow-glow">🧮</div>
+          <div
+            class="h-10 w-10 grid place-items-center rounded-2xl bg-brand-500/20 text-brand-300 text-xl shadow-glow"
+            title="MBPS"
+          >
+            🧮
+          </div>
           <div>
-            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">REI Marketing ROI — MBPS</h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Spend → Leads → Contracts (per plan)</p>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">
+              REI Marketing ROI — MBPS
+            </h1>
+            <p class="text-xs text-slate-400">
+              Spend → Leads → Contracts (per-plan funnel modeling)
+            </p>
           </div>
         </div>
+
         <div class="header-tools flex items-center gap-2">
-          <button id="themeBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40">Light/Dark</button>
-          <button id="installBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40 hidden">Install</button>
-          <button id="csvBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40">Export CSV</button>
-          <button id="resetBtn" class="btn px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/40">Reset</button>
-          <button id="printBtn" class="btn px-3 py-2 rounded-xl bg-brand-600 text-white">Print / PDF</button>
+          <button id="themeBtn" class="btn" title="Toggle Light/Dark">
+            Light/Dark
+          </button>
+
+          <button id="installBtn" class="btn hidden" title="Install as App">
+            Install
+          </button>
+
+          <button id="csvBtn" class="btn" title="Export CSV">
+            Export CSV
+          </button>
+
+          <button id="resetBtn" class="btn" title="Reset to Defaults">
+            Reset
+          </button>
+
+          <button id="printBtn" class="btn btn-primary" title="Print / PDF">
+            Print / PDF
+          </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- =======================================================================
+       MAIN CONTENT
+     ======================================================================= -->
   <main class="max-w-5xl mx-auto px-4 pb-24 sm:pb-20">
 
-    <!-- KPIs (sticky on mobile) -->
-    <section class="sticky-kpis grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">Total Marketing Budget</div><div id="kpiMkt" class="number text-xl sm:text-2xl font-extrabold">$0</div></div>
-      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">VA Spend</div><div id="kpiVA" class="number text-xl sm:text-2xl font-extrabold">$0</div></div>
-      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">Deals / Mo</div><div id="kpiDeals" class="number text-xl sm:text-2xl font-extrabold">0.00</div></div>
-      <div class="metric p-3 sm:p-4 glass"><div class="text-[12px] sm:text-[11px] label">ROI</div><div id="kpiROI" class="number text-xl sm:text-2xl font-extrabold">0%</div></div>
+    <!-- ==========================================================
+         KPI RIBBON (Sticky: bottom on mobile, top on desktop)
+       ========================================================== -->
+    <section class="sticky-kpis glass">
+      <div class="kpi-grid">
+        <!-- KPI: Marketing Budget (sum of enabled plan budgets) -->
+        <div class="metric p-3 sm:p-4">
+          <div class="text-[12px] label">Total Marketing Budget</div>
+          <div id="kpiMkt" class="number text-lg sm:text-2xl font-extrabold">$0</div>
+        </div>
+
+        <!-- KPI: VA Spend (entered or derived from VA count * rate * hours) -->
+        <div class="metric p-3 sm:p-4">
+          <div class="text-[12px] label">VA Spend</div>
+          <div id="kpiVA" class="number text-lg sm:text-2xl font-extrabold">$0</div>
+        </div>
+
+        <!-- KPI: Deals / Mo (sum across enabled plans) -->
+        <div class="metric p-3 sm:p-4">
+          <div class="text-[12px] label">Deals / Mo</div>
+          <div id="kpiDeals" class="number text-lg sm:text-2xl font-extrabold">0.00</div>
+        </div>
+
+        <!-- KPI: ROI (profit / total cost) -->
+        <div class="metric p-3 sm:p-4">
+          <div class="text-[12px] label">ROI</div>
+          <div id="kpiROI" class="number text-lg sm:text-2xl font-extrabold">0%</div>
+        </div>
+      </div>
     </section>
 
-    <!-- Plan Card with LEFT-ALIGNED SELECTOR + PRESETS -->
-    <section class="glass p-4 sm:p-6 md:p-8">
+    <!-- ==========================================================
+         PLAN SELECTOR + PRESETS + INCLUDE TOGGLE
+       ========================================================== -->
+    <section class="glass p-4 sm:p-6 md:p-8 mt-4">
+      <!-- Controls Row -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-5">
-        <div class="selector-wrap w-full sm:w-auto flex flex-col sm:flex-row gap-3 sm:items-center">
-          <label class="label">Select Marketing Plan</label>
-          <div class="relative w-full sm:w-auto">
-            <select id="planSelector" class="input inputlike pl-10 pr-10 py-3 w-full sm:w-[220px]">
-              <option value="sms">📱 SMS</option>
-              <option value="calls">☎️ Calls</option>
-              <option value="mail">✉️ Mail</option>
-              <option value="ppl">💻 PPC / PPL</option>
-            </select>
-            <span class="pointer-events-none absolute left-3 top-3.5">🔀</span>
-            <span class="pointer-events-none absolute right-3 top-3.5">▾</span>
+
+        <!-- Left controls: Plan selector + Preset selector -->
+        <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-3 sm:items-center">
+          <!-- Plan -->
+          <div class="w-full sm:w-auto">
+            <label class="label" for="planSelector">Select Marketing Plan</label>
+            <div class="relative">
+              <select id="planSelector" class="input pr-10 w-full sm:w-[220px]">
+                <option value="sms">📱 SMS</option>
+                <option value="calls">☎️ Calls</option>
+                <option value="mail">✉️ Mail</option>
+                <option value="ppl">💻 PPC / PPL</option>
+              </select>
+              <span class="pointer-events-none absolute right-3 top-3.5">▾</span>
+            </div>
           </div>
 
-          <label class="label sm:ml-4">Assumption Preset</label>
-          <div class="relative w-full sm:w-auto">
-            <select id="presetSelector" class="input inputlike pl-10 pr-10 py-3 w-full sm:w-[200px]">
-              <option value="baseline">⚖️ Baseline</option>
-              <option value="aggressive">🔥 Aggressive</option>
-              <option value="conservative">🧊 Conservative</option>
-            </select>
-            <span class="pointer-events-none absolute left-3 top-3.5">🎛️</span>
-            <span class="pointer-events-none absolute right-3 top-3.5">▾</span>
+          <!-- Presets -->
+          <div class="w-full sm:w-auto">
+            <label class="label" for="presetSelector">Assumption Preset</label>
+            <div class="relative">
+              <select id="presetSelector" class="input pr-10 w-full sm:w-[200px]">
+                <option value="baseline">⚖️ Baseline</option>
+                <option value="aggressive">🔥 Aggressive</option>
+                <option value="conservative">🧊 Conservative</option>
+              </select>
+              <span class="pointer-events-none absolute right-3 top-3.5">▾</span>
+            </div>
           </div>
         </div>
 
-        <label class="inline-flex items-center gap-2">
+        <!-- Right: Include toggle -->
+        <div class="w-full sm:w-auto flex items-center gap-2">
           <input id="planEnabled" type="checkbox" class="h-5 w-5" checked />
-          <span class="text-sm text-slate-600 dark:text-slate-300">Include this plan in totals</span>
-        </label>
+          <label for="planEnabled" class="text-sm text-slate-300">Include this plan in totals</label>
+        </div>
+
       </div>
 
+      <!-- ======================================================
+           PLAN FORM (per selected plan)
+         ====================================================== -->
       <div id="planForm" class="grid gap-5 md:grid-cols-3">
-        <!-- Column 1: Budget -->
+        <!-- Column 1: Budget & Cost -->
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-2">Plan Budget</h2>
-          <div class="grid gap-3">
-            <div>
-              <label class="label">Budget for this Plan ($/mo)</label>
-              <input id="pBudget" type="number" class="input" min="0" value="2500" inputmode="decimal" />
-            </div>
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">Plan Budget & Cost</h2>
 
-            <!-- Cost input switches label depending on plan type -->
-            <div>
-              <label id="costLabel" class="label">Cost per Touch</label>
-              <input id="pCost" type="number" step="0.0001" class="input" min="0" value="0.012" inputmode="decimal" />
-            </div>
+          <!-- Budget -->
+          <div class="mb-4">
+            <label class="label" for="pBudget">Budget for this Plan ($/mo)</label>
+            <input id="pBudget" type="number" class="input" min="0" value="2500" inputmode="decimal" />
           </div>
+
+          <!-- Cost per unit (touch or lead) -->
+          <div class="mb-2">
+            <label id="costLabel" class="label" for="pCost">Cost per Touch</label>
+            <input id="pCost" type="number" class="input" step="0.0001" min="0" value="0.012" inputmode="decimal" />
+          </div>
+
+          <p class="text-xs text-slate-400 mt-1">
+            <span id="costHelpTouch" class="">For SMS/Calls/Mail: cost per text, dial, or mailer.</span>
+            <span id="costHelpLead" class="hidden">For PPC/PPL: cost per inbound lead.</span>
+          </p>
         </div>
 
         <!-- Column 2: Funnel Rates -->
         <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-2">Funnel (This Plan)</h2>
-          <div class="grid gap-3">
-            <div>
-              <label id="leadRateLabel" class="label">Touch → Lead %</label>
-              <input id="pLeadRate" type="number" step="0.01" class="input" min="0" max="100" value="2" inputmode="decimal" />
-            </div>
-            <div>
-              <label id="dealRateLabel" class="label">Lead → Contract %</label>
-              <input id="pDealRate" type="number" step="0.01" class="input" min="0" max="100" value="2" inputmode="decimal" />
-            </div>
+
+          <!-- Lead rate (for touch-type plans) -->
+          <div class="mb-4">
+            <label id="leadRateLabel" class="label" for="pLeadRate">Touch → Lead %</label>
+            <input id="pLeadRate" type="number" class="input" step="0.01" min="0" max="100" value="2" inputmode="decimal" />
           </div>
+
+          <!-- Deal rate (lead to contract) -->
+          <div>
+            <label id="dealRateLabel" class="label" for="pDealRate">Lead → Contract %</label>
+            <input id="pDealRate" type="number" class="input" step="0.01" min="0" max="100" value="2" inputmode="decimal" />
+          </div>
+
+          <p class="text-xs text-slate-400 mt-2">
+            SMS baseline: 2% → lead, 2% of leads → contracts (≈1 deal per 2,500 texts).
+            Calls baseline: 10% → lead, 17% of leads → contracts.
+            Mail baseline: 1% → lead, 4% of leads → contracts.
+            PPC/PPL: cost per lead with ~3% close.
+          </p>
         </div>
 
-        <!-- Column 3: Output (per selected plan) -->
+        <!-- Column 3: This Plan — Outputs -->
         <div>
-          <h2 class="text-sm font-semibold text-brand-300 mb-2">This Plan — Output</h2>
-          <div class="grid gap-3">
-            <div>
-              <label class="label">Touches / Mo (est.)</label>
-              <input id="pTouches" class="input" value="0" disabled />
-            </div>
-            <div>
-              <label class="label">Leads / Mo (est.)</label>
-              <input id="pLeads" class="input" value="0" disabled />
-            </div>
-            <div>
-              <label class="label">Deals / Mo (est.)</label>
-              <input id="pDeals" class="input" value="0.00" disabled />
-            </div>
-            <div>
-              <label class="label">Revenue / Mo (this plan)</label>
-              <input id="pRevenue" class="input" value="$0" disabled />
-            </div>
+          <h2 class="text-sm font-semibold text-brand-300 mb-2">This Plan — Output (est.)</h2>
+
+          <div class="mb-3">
+            <label class="label">Touches / Mo</label>
+            <input id="pTouches" class="input" value="0" disabled />
+          </div>
+
+          <div class="mb-3">
+            <label class="label">Leads / Mo</label>
+            <input id="pLeads" class="input" value="0" disabled />
+          </div>
+
+          <div class="mb-3">
+            <label class="label">Deals / Mo</label>
+            <input id="pDeals" class="input" value="0.00" disabled />
+          </div>
+
+          <div>
+            <label class="label">Revenue / Mo (this plan)</label>
+            <input id="pRevenue" class="input" value="$0" disabled />
           </div>
         </div>
       </div>
 
-      <!-- VA + Global Settings -->
+      <!-- ======================================================
+           GLOBAL SETTINGS: VA Spend + Deal Size + Overhead toggle
+         ====================================================== -->
       <div class="mt-6 grid gap-5 md:grid-cols-3">
+
+        <!-- VA Spend -->
         <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-2">VA Spend</h2>
-          <div class="space-y-3">
+
+          <!-- Mode toggle: enter VA budget directly or by people -->
+          <div class="mb-3">
             <label class="inline-flex items-center gap-2">
               <input id="useVABudget" type="checkbox" class="h-5 w-5">
-              <span class="text-sm text-slate-500 dark:text-slate-400">Enter VA budget directly</span>
+              <span class="text-sm text-slate-400">
+                Enter VA budget directly (otherwise calculated from headcount)
+              </span>
             </label>
-            <div id="vaByPeople" class="grid grid-cols-3 gap-3">
-              <div><label class="label"># of VAs</label><input id="vaCount" type="number" class="input" value="1" min="0" inputmode="decimal"></div>
-              <div><label class="label">VA $/hr</label><input id="vaRate" type="number" class="input" value="6" min="0" step="0.01" inputmode="decimal"></div>
-              <div><label class="label">Hours/Week</label><input id="vaHours" type="number" class="input" value="20" min="0" inputmode="decimal"></div>
+          </div>
+
+          <!-- VA by people (default) -->
+          <div id="vaByPeople" class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="label" for="vaCount"># of VAs</label>
+              <input id="vaCount" type="number" class="input" value="1" min="0" inputmode="decimal" />
             </div>
-            <div id="vaByBudget" class="hidden">
-              <label class="label">VA budget ($/mo)</label><input id="vaBudget" type="number" class="input" value="0" min="0" inputmode="decimal">
+
+            <div>
+              <label class="label" for="vaRate">VA $/hr</label>
+              <input id="vaRate" type="number" class="input" value="6" min="0" step="0.01" inputmode="decimal" />
             </div>
+
+            <div>
+              <label class="label" for="vaHours">Hours/Week</label>
+              <input id="vaHours" type="number" class="input" value="20" min="0" inputmode="decimal" />
+            </div>
+          </div>
+
+          <!-- VA by budget (hidden until toggled) -->
+          <div id="vaByBudget" class="hidden mt-3">
+            <label class="label" for="vaBudget">VA budget ($/mo)</label>
+            <input id="vaBudget" type="number" class="input" value="0" min="0" inputmode="decimal" />
           </div>
         </div>
 
+        <!-- Economics -->
         <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-2">Economics</h2>
-          <div class="grid gap-3">
-            <div>
-              <label class="label">Average Deal Size ($)</label>
-              <input id="dealSize" type="number" class="input" value="15000" min="0" inputmode="decimal">
-            </div>
-            <label class="inline-flex items-center gap-2">
-              <input id="toggleOverhead" type="checkbox" class="h-5 w-5">
-              <span class="text-sm text-slate-600 dark:text-slate-300">Treat VA as fixed overhead (exclude from CPA)</span>
-            </label>
+
+          <div class="mb-4">
+            <label class="label" for="dealSize">Average Deal Size ($)</label>
+            <input id="dealSize" type="number" class="input" value="15000" min="0" inputmode="decimal" />
           </div>
+
+          <label class="inline-flex items-center gap-2">
+            <input id="toggleOverhead" type="checkbox" class="h-5 w-5">
+            <span class="text-sm text-slate-300">
+              Treat VA as fixed overhead (exclude from blended CPA)
+            </span>
+          </label>
         </div>
 
+        <!-- Per-Deal Metrics -->
         <div>
           <h2 class="text-sm font-semibold text-brand-300 mb-2">Per-Deal Metrics</h2>
+
           <div class="grid grid-cols-2 gap-3 text-sm">
-            <div class="p-3 rounded-xl border border-white/10 bg-white/60 dark:bg-white/5">
-              <div class="text-slate-500 dark:text-slate-400">Cost per Deal (marketing only)</div>
+            <div class="p-3 rounded-xl border border-white/10 bg-white/5">
+              <div class="text-slate-400">Cost per Deal (marketing-only or blended)</div>
               <div id="cpa" class="number font-semibold">$0</div>
             </div>
-            <div class="p-3 rounded-xl border border-white/10 bg-white/60 dark:bg-white/5">
-              <div class="text-slate-500 dark:text-slate-400">Profit per Deal</div>
+
+            <div class="p-3 rounded-xl border border-white/10 bg-white/5">
+              <div class="text-slate-400">Profit per Deal</div>
               <div id="ppd" class="number font-semibold">$0</div>
             </div>
           </div>
+
+          <p class="mt-2 text-xs text-slate-500">
+            CPA includes VA if overhead toggle is off; otherwise excludes VA.
+          </p>
         </div>
       </div>
 
-      <!-- Goal Seek -->
+      <!-- ======================================================
+           GOAL SEEK (Deals & Profit)
+         ====================================================== -->
       <div class="mt-6 grid gap-5 md:grid-cols-2">
-        <div class="p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/70 dark:bg-white/5">
-          <h3 class="text-sm font-semibold text-brand-300 mb-2">Goal Seek — Target Deals/Month</h3>
-          <div class="flex gap-3 items-center">
-            <input id="goalDeals" type="number" value="3" class="input w-32" inputmode="decimal" />
-            <button id="goalSolve" class="btn px-3 py-2 rounded-xl bg-brand-600 text-white">Solve (adjust this plan’s budget)</button>
+        <!-- Goal Seek: Deals -->
+        <div class="p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/5">
+          <h3 class="text-sm font-semibold text-brand-300 mb-2">
+            Goal Seek — Target Deals / Month (Combined)
+          </h3>
+
+          <div class="flex flex-wrap gap-3 items-center">
+            <input id="goalDeals" type="number" class="input w-32" value="3" inputmode="decimal" />
+            <button id="goalSolve" class="btn btn-brand">
+              Solve by adjusting this plan’s budget
+            </button>
           </div>
-          <div id="goalResult" class="text-sm text-slate-600 dark:text-slate-300 mt-2"></div>
+
+          <div id="goalResult" class="text-sm text-slate-300 mt-2"></div>
         </div>
 
-        <div class="p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/70 dark:bg-white/5">
-          <h3 class="text-sm font-semibold text-brand-300 mb-2">Goal Seek — Target Profit/Month ($)</h3>
-          <div class="flex gap-3 items-center">
-            <input id="goalProfit" type="number" value="30000" class="input w-40" inputmode="decimal" />
-            <button id="goalSolveProfit" class="btn px-3 py-2 rounded-xl bg-brand-600 text-white">Solve (adjust this plan’s budget)</button>
+        <!-- Goal Seek: Profit -->
+        <div class="p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/5">
+          <h3 class="text-sm font-semibold text-brand-300 mb-2">
+            Goal Seek — Target Profit / Month ($)
+          </h3>
+
+          <div class="flex flex-wrap gap-3 items-center">
+            <input id="goalProfit" type="number" class="input w-40" value="30000" inputmode="decimal" />
+            <button id="goalSolveProfit" class="btn btn-brand">
+              Solve by adjusting this plan’s budget
+            </button>
           </div>
-          <div id="goalResultProfit" class="text-sm text-slate-600 dark:text-slate-300 mt-2"></div>
+
+          <div id="goalResultProfit" class="text-sm text-slate-300 mt-2"></div>
         </div>
       </div>
     </section>
 
-    <!-- Totals Table -->
-    <section class="mt-4 sm:mt-6 glass p-4 sm:p-6 md:p-8">
-      <h2 class="text-sm font-semibold text-brand-300 mb-3">Combined Totals (Included Plans)</h2>
+    <!-- ==========================================================
+         COMBINED TOTALS TABLE (Included Plans)
+       ========================================================== -->
+    <section class="glass p-4 sm:p-6 md:p-8 mt-4 sm:mt-6">
+      <h2 class="text-sm font-semibold text-brand-300 mb-3">
+        Combined Totals (Included Plans)
+      </h2>
+
       <div class="overflow-x-auto -mx-2 sm:mx-0 px-2">
-        <table class="w-full text-sm min-w-[720px]">
-          <thead class="text-left text-slate-500 dark:text-slate-400 border-b border-white/10">
-            <tr><th>Plan</th><th>Budget</th><th>Touches</th><th>Leads</th><th>Deals</th><th>Revenue</th><th>Cost</th><th>Profit</th></tr>
+        <table class="w-full text-sm min-w-[920px]">
+          <thead class="text-left text-slate-400 border-b border-white/10">
+            <tr>
+              <th class="py-2">Plan</th>
+              <th class="py-2">Budget</th>
+              <th class="py-2">Touches</th>
+              <th class="py-2">Leads</th>
+              <th class="py-2">Deals</th>
+              <th class="py-2">Revenue</th>
+              <th class="py-2">Marketing Cost</th>
+              <th class="py-2">Profit</th>
+            </tr>
           </thead>
-          <tbody id="tableBody" class="text-slate-800 dark:text-slate-200"></tbody>
+          <tbody id="tableBody" class="text-slate-200"></tbody>
           <tfoot class="border-t border-white/10 font-semibold">
-            <tr><td>Totals</td><td id="tBudget"></td><td id="tTouches"></td><td id="tLeads"></td><td id="tDeals"></td><td id="tRevenue"></td><td id="tCost"></td><td id="tProfit"></td></tr>
+            <tr>
+              <td class="py-2">Totals</td>
+              <td id="tBudget" class="number"></td>
+              <td id="tTouches" class="number"></td>
+              <td id="tLeads" class="number"></td>
+              <td id="tDeals" class="number"></td>
+              <td id="tRevenue" class="number"></td>
+              <td id="tCost" class="number"></td>
+              <td id="tProfit" class="number"></td>
+            </tr>
           </tfoot>
         </table>
       </div>
     </section>
 
-    <footer class="py-10 text-center text-xs text-slate-500 dark:text-slate-400">
+    <!-- FOOTER -->
+    <footer class="py-10 text-center text-xs text-slate-500">
       © <span id="year"></span> MBPS — Deal Sprint | DealDesk
     </footer>
   </main>
 
-  <!-- App Logic (unchanged functionality; mobile tweaks only in UI) -->
+  <!-- ==========================================================
+       FLOATING ACTION BUTTONS (Dual)
+       - 🔁 Recalc
+       - 📊 CSV
+       ========================================================== -->
+  <div class="fab-dock no-print">
+    <button id="recalcFab" class="fab-btn" title="Recalculate">🔁</button>
+    <button id="csvFab" class="fab-btn" title="Export CSV">📊</button>
+  </div>
+
+  <!-- ==========================================================
+       APPLICATION LOGIC
+       ========================================================== -->
   <script>
+    // ---------------------------------------
+    // Utilities
+    // ---------------------------------------
     const el = id => document.getElementById(id);
-    const fmt = (n, d=0) => isFinite(n) ? n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) : '-';
+    const fmt = (n, d=0) =>
+      isFinite(n) ? n.toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d}) : '-';
     const money = (n, d=0) => `$${fmt(n, d)}`;
 
-    // Theme toggle
+    // ---------------------------------------
+    // Theme Toggle
+    // ---------------------------------------
     el('themeBtn').addEventListener('click', ()=>{
       document.documentElement.classList.toggle('dark');
       const mode = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
       localStorage.setItem('mbps_theme', mode);
     });
 
-    // ---- Plans (funnel model) ----
+    // ---------------------------------------
+    // Plans (Funnel Model)
+    // - type 'touch' : cost per touch (SMS/Calls/Mail)
+    // - type 'lead'  : cost per lead (PPC/PPL)
+    // Rates are percentages.
+    // ---------------------------------------
     const plans = {
-      sms:  { type:'touch', name:'SMS',   icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 },
-      calls:{ type:'touch', name:'Calls', icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 },
-      mail: { type:'touch', name:'Mail',  icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 },
-      ppl:  { type:'lead',  name:'PPC/PPL',icon:'💻',enabled:false, budget:5000, cost:100,   leadRate:100, dealRate:3 }
+      sms:   { type:'touch', name:'SMS',     icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 },
+      calls: { type:'touch', name:'Calls',   icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 },
+      mail:  { type:'touch', name:'Mail',    icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 },
+      ppl:   { type:'lead',  name:'PPC/PPL', icon:'💻', enabled:false, budget:5000, cost:100,   leadRate:100,dealRate:3 }
+      // Note: for 'lead' type, leadRate is effectively 100% because budget/cost = leads
     };
+
     let selectedPlan = 'sms';
 
+    // ---------------------------------------
+    // Assumption Presets (update ALL plans)
+    // ---------------------------------------
     const presets = {
       baseline: () => {
-        plans.sms.cost=0.012; plans.sms.leadRate=2;  plans.sms.dealRate=2;
-        plans.calls.cost=0.06; plans.calls.leadRate=10; plans.calls.dealRate=17;
-        plans.mail.cost=0.85;  plans.mail.leadRate=1; plans.mail.dealRate=4;
-        plans.ppl.cost=100;    plans.ppl.dealRate=3;
+        plans.sms.cost=0.012;  plans.sms.leadRate=2;   plans.sms.dealRate=2;
+        plans.calls.cost=0.06;  plans.calls.leadRate=10; plans.calls.dealRate=17;
+        plans.mail.cost=0.85;   plans.mail.leadRate=1; plans.mail.dealRate=4;
+        plans.ppl.cost=100;     plans.ppl.dealRate=3;
       },
       aggressive: () => {
-        plans.sms.cost=0.012;  plans.sms.leadRate=2.5; plans.sms.dealRate=2.5;
-        plans.calls.cost=0.055;plans.calls.leadRate=20; plans.calls.dealRate=20;
-        plans.mail.cost=0.80;  plans.mail.leadRate=2;  plans.mail.dealRate=5;
-        plans.ppl.cost=80;     plans.ppl.dealRate=4;
+        plans.sms.cost=0.012;   plans.sms.leadRate=2.5; plans.sms.dealRate=2.5;
+        plans.calls.cost=0.055; plans.calls.leadRate=20; plans.calls.dealRate=20;
+        plans.mail.cost=0.80;   plans.mail.leadRate=2;  plans.mail.dealRate=5;
+        plans.ppl.cost=80;      plans.ppl.dealRate=4;
       },
       conservative: () => {
-        plans.sms.cost=0.012;  plans.sms.leadRate=1.5; plans.sms.dealRate=1.5;
-        plans.calls.cost=0.065;plans.calls.leadRate=5;  plans.calls.dealRate=15;
-        plans.mail.cost=0.90;  plans.mail.leadRate=0.5;plans.mail.dealRate=3;
-        plans.ppl.cost=120;    plans.ppl.dealRate=2;
+        plans.sms.cost=0.012;   plans.sms.leadRate=1.5; plans.sms.dealRate=1.5;
+        plans.calls.cost=0.065; plans.calls.leadRate=5;  plans.calls.dealRate=15;
+        plans.mail.cost=0.90;   plans.mail.leadRate=0.5;plans.mail.dealRate=3;
+        plans.ppl.cost=120;     plans.ppl.dealRate=2;
       }
     };
 
-    // --- VA & global economics ---
+    // ---------------------------------------
+    // VA & Economics
+    // ---------------------------------------
     function getVASpend(){
-      if (el('useVABudget').checked) return +el('vaBudget').value || 0;
-      const count = +el('vaCount').value || 0, rate = +el('vaRate').value || 0, hrs = +el('vaHours').value || 0;
+      if (el('useVABudget').checked) {
+        return +el('vaBudget').value || 0;
+      }
+      const count = +el('vaCount').value || 0;
+      const rate  = +el('vaRate').value  || 0;
+      const hrs   = +el('vaHours').value || 0;
+      // 4.33 weeks/month
       return count * rate * hrs * 4.33;
     }
     let treatVAAsOverhead = false;
 
-    // ---- Per-plan math (funnel) ----
+    // ---------------------------------------
+    // Per-plan math (Funnel)
+    // ---------------------------------------
     function calcPlan(p, dealSize){
-      if (!p.enabled) return { touches:0, leads:0, deals:0, revenue:0, cost:0, profit:0 };
+      if (!p.enabled) {
+        return { touches:0, leads:0, deals:0, revenue:0, cost:0, profit:0 };
+      }
 
-      if (p.type === 'touch'){
-        const touches = p.cost>0 ? (p.budget / p.cost) : 0;
-        const leads = touches * (p.leadRate/100);
-        const deals = leads * (p.dealRate/100);
-        const revenue = deals * dealSize;
-        const cost = p.budget;
-        const profit = revenue - cost;
+      if (p.type === 'touch') {
+        const touches = p.cost > 0 ? (p.budget / p.cost) : 0;
+        const leads   = touches * (p.leadRate / 100);
+        const deals   = leads   * (p.dealRate / 100);
+        const revenue = deals   * dealSize;
+        const cost    = p.budget;
+        const profit  = revenue - cost;
         return { touches, leads, deals, revenue, cost, profit };
       } else {
-        const leads = p.cost>0 ? (p.budget / p.cost) : 0;
-        const deals = leads * (p.dealRate/100);
+        // 'lead' type (PPC/PPL)
+        const leads   = p.cost > 0 ? (p.budget / p.cost) : 0;
+        const deals   = leads * (p.dealRate / 100);
         const revenue = deals * dealSize;
-        const cost = p.budget;
-        const profit = revenue - cost;
+        const cost    = p.budget;
+        const profit  = revenue - cost;
         return { touches:0, leads, deals, revenue, cost, profit };
       }
     }
 
     function combinedCalc(){
       const dealSize = +el('dealSize').value || 0;
-      const vaSpend = getVASpend();
+      const vaSpend  = getVASpend();
 
       const rows = Object.entries(plans).map(([key,p])=>{
         const r = calcPlan(p, dealSize);
         return { key, name:p.name, icon:p.icon, ...r };
       });
 
-      const mktCost = rows.reduce((a,r)=>a+r.cost,0);
+      const mktCost   = rows.reduce((a,r)=>a+r.cost,0);
       const totalCost = mktCost + vaSpend;
-      const revenue = rows.reduce((a,r)=>a+r.revenue,0);
-      const profit = revenue - totalCost;
-      const roi = totalCost>0 ? (profit/totalCost) : 0;
+      const revenue   = rows.reduce((a,r)=>a+r.revenue,0);
+      const profit    = revenue - totalCost;
+      const roi       = totalCost > 0 ? (profit/totalCost) : 0;
 
       const totals = {
-        budget: mktCost + vaSpend,
+        budget:  mktCost + vaSpend,
         touches: rows.reduce((a,r)=>a+r.touches,0),
-        leads: rows.reduce((a,r)=>a+r.leads,0),
-        deals: rows.reduce((a,r)=>a+r.deals,0),
-        revenue, mktCost, vaSpend, totalCost, profit, roi, dealSize
+        leads:   rows.reduce((a,r)=>a+r.leads,0),
+        deals:   rows.reduce((a,r)=>a+r.deals,0),
+        revenue,
+        mktCost,
+        vaSpend,
+        totalCost,
+        profit,
+        roi,
+        dealSize
       };
       return { rows, totals };
     }
 
-    function setSelectedBudget(val){ plans[selectedPlan].budget = Math.max(0, Math.round(val)); }
-    function budgetForDeals(targetDeals, maxIter=32){
-      let lo=0, hi=100000;
-      for (let i=0;i<maxIter;i++){
-        const mid=(lo+hi)/2; setSelectedBudget(mid);
-        const r = combinedCalc().totals; (r.deals >= targetDeals) ? hi=mid : lo=mid;
-      }
-      setSelectedBudget(hi); syncPlanFields(); render(); return hi;
-    }
-    function budgetForProfit(targetProfit, maxIter=32){
-      let lo=0, hi=100000;
-      for (let i=0;i<maxIter;i++){
-        const mid=(lo+hi)/2; setSelectedBudget(mid);
-        const r = combinedCalc().totals; (r.profit >= targetProfit) ? hi=mid : lo=mid;
-      }
-      setSelectedBudget(hi); syncPlanFields(); render(); return hi;
+    // ---------------------------------------
+    // Goal Seek: adjust SELECTED plan budget to meet global target
+    // ---------------------------------------
+    function setSelectedBudget(val){
+      plans[selectedPlan].budget = Math.max(0, Math.round(val));
     }
 
+    function budgetForDeals(targetDeals, maxIter=32){
+      let lo = 0, hi = 100000; // search range in $
+      for (let i=0; i<maxIter; i++){
+        const mid = (lo + hi) / 2;
+        setSelectedBudget(mid);
+        const r = combinedCalc().totals;
+        (r.deals >= targetDeals) ? hi = mid : lo = mid;
+      }
+      setSelectedBudget(hi);
+      syncPlanFields();
+      render();
+      return hi;
+    }
+
+    function budgetForProfit(targetProfit, maxIter=32){
+      let lo = 0, hi = 100000;
+      for (let i=0; i<maxIter; i++){
+        const mid = (lo + hi) / 2;
+        setSelectedBudget(mid);
+        const r = combinedCalc().totals;
+        (r.profit >= targetProfit) ? hi = mid : lo = mid;
+      }
+      setSelectedBudget(hi);
+      syncPlanFields();
+      render();
+      return hi;
+    }
+
+    // ---------------------------------------
+    // UI Sync Helpers
+    // ---------------------------------------
     function syncCostLabels(){
       const p = plans[selectedPlan];
-      if (p.type === 'touch'){
-        el('costLabel').textContent = 'Cost per Touch';
-        el('leadRateLabel').textContent = 'Touch → Lead %';
-        el('dealRateLabel').textContent = 'Lead → Contract %';
-      } else {
-        el('costLabel').textContent = 'Cost per Lead';
-        el('leadRateLabel').textContent = 'Lead Rate (fixed)';
-        el('dealRateLabel').textContent = 'Lead → Contract %';
-      }
+
+      const isTouch = p.type === 'touch';
+      el('costLabel').textContent = isTouch ? 'Cost per Touch' : 'Cost per Lead';
+
+      // help text toggles
+      el('costHelpTouch').classList.toggle('hidden', !isTouch);
+      el('costHelpLead').classList.toggle('hidden', isTouch);
+
+      // rate labels
+      el('leadRateLabel').textContent = isTouch ? 'Touch → Lead %' : 'Lead Rate (fixed)';
+      el('dealRateLabel').textContent = 'Lead → Contract %';
     }
 
     function syncPlanFields(){
       const p = plans[selectedPlan];
-      el('planEnabled').checked = !!p.enabled;
-      el('pBudget').value = p.budget;
-      el('pCost').value = p.cost;
-      el('pLeadRate').value = p.leadRate;
-      el('pDealRate').value = p.dealRate;
+
+      el('planEnabled').checked   = !!p.enabled;
+      el('pBudget').value         = p.budget;
+      el('pCost').value           = p.cost;
+      el('pLeadRate').value       = p.leadRate;
+      el('pDealRate').value       = p.dealRate;
+
       syncCostLabels();
 
+      // Update the quick outputs for the current plan
       const sz = +el('dealSize').value || 0;
-      const r = calcPlan(p, sz);
-      el('pTouches').value = fmt(r.touches,0);
-      el('pLeads').value = fmt(r.leads,0);
-      el('pDeals').value = fmt(r.deals,2);
-      el('pRevenue').value = money(r.revenue,0);
+      const r  = calcPlan(p, sz);
+
+      el('pTouches').value  = fmt(r.touches,0);
+      el('pLeads').value    = fmt(r.leads,0);
+      el('pDeals').value    = fmt(r.deals,2);
+      el('pRevenue').value  = money(r.revenue,0);
     }
 
+    // ---------------------------------------
+    // Render: KPIs, Table, Per-Deal metrics, Snapshot
+    // ---------------------------------------
     function render(){
       const { rows, totals } = combinedCalc();
 
-      el('kpiMkt').textContent = money(totals.mktCost);
-      el('kpiVA').textContent = money(totals.vaSpend);
+      // KPIs
+      el('kpiMkt').textContent   = money(totals.mktCost);
+      el('kpiVA').textContent    = money(totals.vaSpend);
       el('kpiDeals').textContent = fmt(totals.deals,2);
-      el('kpiROI').textContent = fmt(totals.roi*100,0)+'%';
+      el('kpiROI').textContent   = fmt(totals.roi*100,0)+'%';
 
-      const body = el('tableBody'); body.innerHTML='';
+      // Table
+      const body = el('tableBody');
+      body.innerHTML = '';
       rows.forEach(row=>{
         const p = plans[row.key];
         const disabled = !p.enabled;
+
         const tr = document.createElement('tr');
         tr.className = 'border-b border-white/10 last:border-0';
+
         tr.innerHTML = `
           <td class="py-2 ${disabled?'text-slate-500':''}">${p.icon} ${p.name}${disabled?' (off)':''}</td>
           <td class="number">${money(row.cost)}</td>
@@ -468,32 +840,45 @@
           <td class="number">${fmt(row.deals,2)}</td>
           <td class="number">${money(row.revenue)}</td>
           <td class="number">${money(row.cost)}</td>
-          <td class="number">${money(row.profit)}</td>`;
+          <td class="number">${money(row.profit)}</td>
+        `;
+
         body.appendChild(tr);
       });
 
-      el('tBudget').textContent = money(totals.budget);
+      // Totals row
+      el('tBudget').textContent  = money(totals.budget);
       el('tTouches').textContent = fmt(totals.touches,0);
-      el('tLeads').textContent = fmt(totals.leads,0);
-      el('tDeals').textContent = fmt(totals.deals,2);
+      el('tLeads').textContent   = fmt(totals.leads,0);
+      el('tDeals').textContent   = fmt(totals.deals,2);
       el('tRevenue').textContent = money(totals.revenue);
-      el('tCost').textContent = money(totals.totalCost);
-      el('tProfit').textContent = money(totals.profit);
+      el('tCost').textContent    = money(totals.totalCost);
+      el('tProfit').textContent  = money(totals.profit);
 
-      const costForCPA = treatVAAsOverhead ? totals.mktCost : totals.totalCost;
-      const cpa = totals.deals>0 ? (costForCPA / totals.deals) : 0;
-      const ppd = totals.deals>0 ? (totals.profit / totals.deals) : 0;
-      el('cpa').textContent = money(cpa,0);
-      el('ppd').textContent = money(ppd,0);
+      // CPA & Profit/Deal
+      const costForCPA   = treatVAAsOverhead ? totals.mktCost : totals.totalCost;
+      const blendedCPA   = totals.deals>0 ? costForCPA / totals.deals : 0;
+      const profitPerDeal= totals.deals>0 ? totals.profit / totals.deals : 0;
 
+      el('cpa').textContent = money(blendedCPA,0);
+      el('ppd').textContent = money(profitPerDeal,0);
+
+      // Keep current plan outputs fresh
       syncPlanFields();
 
+      // Snapshot for CSV
       window.__roiSnapshot = {
         timestamp: new Date().toISOString(),
         plans: JSON.parse(JSON.stringify(plans)),
         totals: {
-          budget: totals.budget, touches: totals.touches, leads: totals.leads, deals: totals.deals,
-          revenue: totals.revenue, cost: totals.totalCost, profit: totals.profit, roi: totals.roi,
+          budget: totals.budget,
+          touches: totals.touches,
+          leads: totals.leads,
+          deals: totals.deals,
+          revenue: totals.revenue,
+          cost: totals.totalCost,
+          profit: totals.profit,
+          roi: totals.roi,
           va_spend: totals.vaSpend
         },
         deal_size: totals.dealSize,
@@ -501,124 +886,242 @@
       };
     }
 
+    // ---------------------------------------
+    // CSV Export (header + per-plan + totals)
+    // ---------------------------------------
     function toCSV(){
       const s = window.__roiSnapshot; if(!s) return '';
       const L = [];
+
       L.push('Section,Metric,Value');
       L.push(`Inputs,Deal Size,${s.deal_size}`);
       L.push(`Inputs,VA Spend,${s.totals.va_spend}`);
-      L.push(`Inputs,Treat VA As Overhead,${s.treatVAAsOverhead}`); L.push('');
+      L.push(`Inputs,Treat VA As Overhead,${s.treatVAAsOverhead}`);
+      L.push('');
+
       L.push('Plan,Type,Budget,CostUnit,Lead%,Deal%,Touches,Leads,Deals,Revenue,Cost,Profit,Included');
       Object.entries(s.plans).forEach(([k,p])=>{
-        const isTouch = p.type==='touch';
-        const dealSize = s.deal_size;
+        const isTouch = p.type === 'touch';
+        const ds = s.deal_size;
+
         let touches=0, leads=0, deals=0, revenue=0, cost=p.budget, profit=0;
+
         if (isTouch){
           touches = p.cost>0 ? p.budget/p.cost : 0;
-          leads = touches * (p.leadRate/100);
-          deals = leads * (p.dealRate/100);
+          leads   = touches * (p.leadRate/100);
+          deals   = leads   * (p.dealRate/100);
         } else {
           leads = p.cost>0 ? p.budget/p.cost : 0;
           deals = leads * (p.dealRate/100);
         }
-        revenue = deals * dealSize; profit = revenue - cost;
-        L.push([p.name,p.type,p.budget,p.cost,p.leadRate,p.dealRate,touches,leads,deals,revenue,cost,profit,p.enabled].join(','));
+
+        revenue = deals * ds;
+        profit  = revenue - cost;
+
+        L.push([
+          p.name, p.type, p.budget, p.cost, p.leadRate, p.dealRate,
+          touches, leads, deals, revenue, cost, profit, p.enabled
+        ].join(','));
       });
+
       L.push('');
       L.push('Totals,Budget,Touches,Leads,Deals,Revenue,Cost,Profit,ROI');
-      L.push(['Totals', s.totals.budget, s.totals.touches, s.totals.leads, s.totals.deals, s.totals.revenue, s.totals.cost, s.totals.profit, s.totals.roi].join(','));
+      L.push([
+        'Totals',
+        s.totals.budget,
+        s.totals.touches,
+        s.totals.leads,
+        s.totals.deals,
+        s.totals.revenue,
+        s.totals.cost,
+        s.totals.profit,
+        s.totals.roi
+      ].join(','));
+
       return L.join('\n');
     }
+
     function downloadCSV(){
-      const blob = new Blob([toCSV()], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a=document.createElement('a'), stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-      a.href=url; a.download=`rei-roi-funnel-${stamp}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      const csv = toCSV();
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      const stamp= new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      a.href = url;
+      a.download = `rei-roi-funnel-${stamp}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
+    // ---------------------------------------
+    // Wire Plan selector + fields
+    // ---------------------------------------
     function applyPlanFieldChanges(){
       const p = plans[selectedPlan];
-      p.enabled = el('planEnabled').checked;
-      p.budget  = +el('pBudget').value || 0;
-      p.cost    = +el('pCost').value   || 0;
-      p.leadRate= +el('pLeadRate').value || 0;
-      p.dealRate= +el('pDealRate').value || 0;
+      p.enabled  = el('planEnabled').checked;
+      p.budget   = +el('pBudget').value     || 0;
+      p.cost     = +el('pCost').value       || 0;
+      p.leadRate = +el('pLeadRate').value   || 0;
+      p.dealRate = +el('pDealRate').value   || 0;
       render();
     }
-    ['planEnabled','pBudget','pCost','pLeadRate','pDealRate'].forEach(id => el(id).addEventListener('input', applyPlanFieldChanges));
+
+    ['planEnabled','pBudget','pCost','pLeadRate','pDealRate']
+      .forEach(id => el(id).addEventListener('input', applyPlanFieldChanges));
 
     el('planSelector').addEventListener('change', (e)=>{
       selectedPlan = e.target.value;
-      plans[selectedPlan].enabled = true; // auto-include selected plan
-      el('planEnabled').checked = true;
-      syncPlanFields(); render();
+      // Auto-enable selected plan
+      plans[selectedPlan].enabled = true;
+      el('planEnabled').checked   = true;
+      syncPlanFields();
+      render();
     });
 
     el('presetSelector').addEventListener('change', (e)=>{
       const v = e.target.value || 'baseline';
       (presets[v] || presets.baseline)();
-      syncPlanFields(); render();
+      syncPlanFields();
+      render();
     });
 
+    // ---------------------------------------
+    // Wire VA + economics
+    // ---------------------------------------
     el('useVABudget').addEventListener('change', ()=>{
       const useB = el('useVABudget').checked;
       el('vaByBudget').classList.toggle('hidden', !useB);
       el('vaByPeople').classList.toggle('hidden', useB);
       render();
     });
-    ['vaCount','vaRate','vaHours','vaBudget','dealSize'].forEach(id=>el(id).addEventListener('input', render));
-    el('toggleOverhead').addEventListener('change', e=>{ treatVAAsOverhead = e.target.checked; render(); });
 
+    ['vaCount','vaRate','vaHours','vaBudget','dealSize']
+      .forEach(id => el(id).addEventListener('input', render));
+
+    el('toggleOverhead').addEventListener('change', (e)=>{
+      treatVAAsOverhead = e.target.checked;
+      render();
+    });
+
+    // ---------------------------------------
+    // Goal Seek buttons
+    // ---------------------------------------
     el('goalSolve').addEventListener('click', ()=>{
-      const t=+el('goalDeals').value||0; if(t<=0) return;
-      const b=budgetForDeals(t);
-      const name=plans[selectedPlan].name;
-      el('goalResult').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo`;
-    });
-    el('goalSolveProfit').addEventListener('click', ()=>{
-      const t=+el('goalProfit').value||0; if(t<=0) return;
-      const b=budgetForProfit(t);
-      const name=plans[selectedPlan].name;
-      el('goalResultProfit').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo`;
+      const t = +el('goalDeals').value || 0;
+      if (t <= 0) return;
+      const b = budgetForDeals(t);
+      const name = plans[selectedPlan].name;
+      el('goalResult').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo to hit ~${fmt(t,2)} deals/mo combined.`;
     });
 
+    el('goalSolveProfit').addEventListener('click', ()=>{
+      const t = +el('goalProfit').value || 0;
+      if (t <= 0) return;
+      const b = budgetForProfit(t);
+      const name = plans[selectedPlan].name;
+      el('goalResultProfit').textContent = `Adjusted ${name} budget to ≈ ${money(b)}/mo to hit ~$${fmt(t,0)} profit/mo combined.`;
+    });
+
+    // ---------------------------------------
+    // Header Buttons
+    // ---------------------------------------
     el('csvBtn').addEventListener('click', downloadCSV);
-    el('printBtn').addEventListener('click', ()=>window.print());
+    el('printBtn').addEventListener('click', ()=> window.print());
     el('resetBtn').addEventListener('click', ()=>{
-      plans.sms  = { type:'touch', name:'SMS',   icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 };
-      plans.calls= { type:'touch', name:'Calls', icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 };
-      plans.mail = { type:'touch', name:'Mail',  icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 };
-      plans.ppl  = { type:'lead',  name:'PPC/PPL',icon:'💻',enabled:false, budget:5000, cost:100,   leadRate:100, dealRate:3 };
+      // Reset to defaults (Baseline preset, SMS enabled)
+      plans.sms   = { type:'touch', name:'SMS',     icon:'📱', enabled:true,  budget:2500, cost:0.012, leadRate:2,  dealRate:2 };
+      plans.calls = { type:'touch', name:'Calls',   icon:'☎️', enabled:false, budget:0,    cost:0.06,  leadRate:10, dealRate:17 };
+      plans.mail  = { type:'touch', name:'Mail',    icon:'✉️', enabled:false, budget:0,    cost:0.85,  leadRate:1,  dealRate:4 };
+      plans.ppl   = { type:'lead',  name:'PPC/PPL', icon:'💻', enabled:false, budget:5000, cost:100,   leadRate:100,dealRate:3 };
+
       selectedPlan = 'sms';
 
-      el('planSelector').value = 'sms';
+      // Controls reset
+      el('planSelector').value   = 'sms';
       el('presetSelector').value = 'baseline';
-      el('planEnabled').checked = true;
+      el('planEnabled').checked  = true;
 
-      el('pBudget').value = 2500; el('pCost').value = 0.012; el('pLeadRate').value = 2; el('pDealRate').value = 2;
+      // Fields reset
+      el('pBudget').value   = 2500;
+      el('pCost').value     = 0.012;
+      el('pLeadRate').value = 2;
+      el('pDealRate').value = 2;
 
+      // VA/Econ reset
       el('useVABudget').checked = false;
-      el('vaCount').value = 1; el('vaRate').value = 6; el('vaHours').value = 20; el('vaBudget').value = 0;
-      el('dealSize').value = 15000;
-      el('toggleOverhead').checked = false; treatVAAsOverhead = false;
+      el('vaByBudget').classList.add('hidden');
+      el('vaByPeople').classList.remove('hidden');
 
-      el('goalDeals').value = 3; el('goalProfit').value = 30000;
-      el('goalResult').textContent = ''; el('goalResultProfit').textContent = '';
-      syncPlanFields(); render();
+      el('vaCount').value  = 1;
+      el('vaRate').value   = 6;
+      el('vaHours').value  = 20;
+      el('vaBudget').value = 0;
+
+      el('dealSize').value = 15000;
+
+      el('toggleOverhead').checked = false;
+      treatVAAsOverhead = false;
+
+      // Goal seek fields
+      el('goalDeals').value  = 3;
+      el('goalProfit').value = 30000;
+      el('goalResult').textContent = '';
+      el('goalResultProfit').textContent = '';
+
+      // Re-render
+      syncPlanFields();
+      render();
     });
 
-    // PWA
-    let deferredPrompt=null; const installBtn=el('installBtn');
+    // ---------------------------------------
+    // FAB Buttons (Recalc + CSV)
+    // ---------------------------------------
+    el('recalcFab').addEventListener('click', render);
+    el('csvFab').addEventListener('click', downloadCSV);
+
+    // ---------------------------------------
+    // PWA install / SW registration
+    // ---------------------------------------
+    let deferredPrompt = null;
+    const installBtn = el('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e)=>{
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.remove('hidden');
+    });
+
+    installBtn.addEventListener('click', async ()=>{
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.classList.add('hidden');
+    });
+
+    window.addEventListener('appinstalled', ()=>{
+      installBtn.classList.add('hidden');
+      deferredPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{ /* noop */ });
+    }
+
+    // ---------------------------------------
+    // Boot
+    // ---------------------------------------
     document.addEventListener('DOMContentLoaded', ()=>{
       el('year').textContent = new Date().getFullYear();
+
+      // Apply baseline preset on load
       presets.baseline();
-      syncPlanFields(); render();
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-      window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; installBtn.classList.remove('hidden'); });
-      installBtn.addEventListener('click', async ()=>{
-        if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.classList.add('hidden');
-      });
-      window.addEventListener('appinstalled', ()=>{ installBtn.classList.add('hidden'); deferredPrompt=null; });
+
+      // Sync UI and render
+      syncPlanFields();
+      render();
     });
   </script>
 </body>

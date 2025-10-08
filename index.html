@@ -392,12 +392,13 @@
             <input id="pDealRate" type="number" class="input" step="0.01" min="0" max="100" value="2" inputmode="decimal" />
           </div>
 
-          <p class="text-xs text-slate-400 mt-2">
-            SMS baseline: 2% → lead, 2% of leads → contracts (≈1 deal per 2,500 texts).
-            Calls baseline: 10% → lead, 17% of leads → contracts.
-            Mail baseline: 1% → lead, 4% of leads → contracts.
-            PPC/PPL: cost per lead with ~3% close.
-          </p>
+         <p class="text-xs text-slate-400 mt-2">
+          SMS baseline ≈ 2 % → lead → 2 % of leads → contracts (≈ 1 deal per 2 500 texts).<br>
+          Calls baseline ≈ 10 % → lead → 17 % of leads → contracts.<br>
+          Mail baseline ≈ 1 % → lead → 3.3 % of leads → contracts.<br>
+          PPC/PPL ≈ $200 per lead → 5 % close rate.
+         </p>
+
         </div>
 
         <!-- Column 3: This Plan — Outputs -->
@@ -774,20 +775,28 @@
     // ---------------------------------------
     // UI Sync Helpers
     // ---------------------------------------
-    function syncCostLabels(){
-      const p = plans[selectedPlan];
+  
+  function syncCostLabels() {
+  const p = plans[selectedPlan];
+  const isTouch = p.type === 'touch';
 
-      const isTouch = p.type === 'touch';
-      el('costLabel').textContent = isTouch ? 'Cost per Touch' : 'Cost per Lead';
+  // Cost label
+  el('costLabel').textContent = isTouch ? 'Cost per Touch' : 'Cost per Lead';
 
-      // help text toggles
-      el('costHelpTouch').classList.toggle('hidden', !isTouch);
-      el('costHelpLead').classList.toggle('hidden', isTouch);
+  // Help text toggle
+  el('costHelpTouch').classList.toggle('hidden', !isTouch);
+  el('costHelpLead').classList.toggle('hidden', isTouch);
 
-      // rate labels
-      el('leadRateLabel').textContent = isTouch ? 'Touch → Lead %' : 'Lead Rate (fixed)';
-      el('dealRateLabel').textContent = 'Lead → Contract %';
-    }
+  // Funnel rate labels — clearer arrows & percentage hint
+  if (isTouch) {
+    el('leadRateLabel').textContent = 'Touches → Leads (%)';
+    el('dealRateLabel').textContent = 'Leads → Contracts (%)';
+  } else {
+    el('leadRateLabel').textContent = 'Leads (100 = All Paid)';
+    el('dealRateLabel').textContent = 'Leads → Contracts (%)';
+  }
+}
+
 
     function syncPlanFields(){
       const p = plans[selectedPlan];

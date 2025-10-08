@@ -644,24 +644,24 @@
     // Assumption Presets (update ALL plans)
     // ---------------------------------------
   const presets = {
-  baseline: () => {
-    plans.sms.cost   = 0.012; plans.sms.leadRate = 0.02;  plans.sms.dealRate = 75;
-    plans.calls.cost = 0.065; plans.calls.leadRate = 0.8;  plans.calls.dealRate = 1.33;
-    plans.mail.cost  = 0.85;  plans.mail.leadRate = 1;     plans.mail.dealRate = 3.3;
-    plans.ppl.cost   = 200;   plans.ppl.leadRate = 100;   plans.ppl.dealRate = 5;
-  },
-  aggressive: () => {
-    plans.sms.leadRate   = 0.025; plans.sms.dealRate   = 86.25;
-    plans.calls.leadRate = 1.0;   plans.calls.dealRate = 1.53;
-    plans.mail.leadRate  = 1.25;  plans.mail.dealRate  = 3.8;
-    plans.ppl.leadRate   = 100;   plans.ppl.dealRate   = 5.75;
-  },
-  conservative: () => {
-    plans.sms.leadRate   = 0.016; plans.sms.dealRate   = 63.75;
-    plans.calls.leadRate = 0.64;  plans.calls.dealRate = 1.13;
-    plans.mail.leadRate  = 0.8;   plans.mail.dealRate  = 2.8;
-    plans.ppl.leadRate   = 100;   plans.ppl.dealRate   = 4.25;
-  }
+baseline: () => {
+  plans.sms.cost   = 0.0286;  plans.sms.leadRate = 0.004;   plans.sms.dealRate = 33.33;
+  plans.calls.cost = 0.065;   plans.calls.leadRate = 0.75;  plans.calls.dealRate = 1.25;
+  plans.mail.cost  = 0.48;    plans.mail.leadRate = 0.5;    plans.mail.dealRate = 1.33;
+  plans.ppl.cost   = 200;     plans.ppl.leadRate = 20;      plans.ppl.dealRate = 1.5;
+},
+aggressive: () => {
+  plans.sms.leadRate   = 0.005;   plans.sms.dealRate   = 38.33;
+  plans.calls.leadRate = 0.9375;  plans.calls.dealRate = 1.4375;
+  plans.mail.leadRate  = 0.625;   plans.mail.dealRate  = 1.53;
+  plans.ppl.leadRate   = 25;      plans.ppl.dealRate   = 1.725;
+},
+conservative: () => {
+  plans.sms.leadRate   = 0.0032;  plans.sms.dealRate   = 28.33;
+  plans.calls.leadRate = 0.6;     plans.calls.dealRate = 1.0625;
+  plans.mail.leadRate  = 0.4;     plans.mail.dealRate  = 1.13;
+  plans.ppl.leadRate   = 16;      plans.ppl.dealRate   = 1.275;
+}
 };
 
     // ---------------------------------------

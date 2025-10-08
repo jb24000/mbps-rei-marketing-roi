@@ -1117,8 +1117,11 @@ conservative: () => {
     });
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js').catch(()=>{ /* noop */ });
-    }
+    navigator.serviceWorker
+    .register('./service-worker.js', { scope: './' })
+    .then(() => console.log('Service Worker registered.'))
+    .catch(err => console.warn('SW registration failed:', err));
+}
 
     // ---------------------------------------
     // Boot
